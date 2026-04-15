@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script type="text/babel" data-presets="react">
-import { useState } from "react";
+
 
 const B = {
   bordeaux: "#650D17",
@@ -427,7 +427,7 @@ function StatCard({ label, waarde, sub, kleur = B.goud }) {
 }
 
 function HaakjeKruisanalyse({ haakjeRanking, voorbeeldenPerType, maxH, maxS, HAAKJE_KLEUREN, bereikTop, savesTop, B, statChip, FUNCTIES }) {
-  const [openType, setOpenType] = useState(null);
+  const [openType, setOpenType] = React.useState(null);
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -530,10 +530,10 @@ function HaakjeKruisanalyse({ haakjeRanking, voorbeeldenPerType, maxH, maxS, HAA
 }
 
 export default function VisibilityAnalyse() {
-  const [fase, setFase] = useState("intro"); // intro | upload | resultaat
-  const [resultaat, setResultaat] = useState(null);
-  const [bestandNaam, setBestandNaam] = useState("");
-  const [fout, setFout] = useState("");
+  const [fase, setFase] = React.useState("intro"); // intro | upload | resultaat
+  const [resultaat, setResultaat] = React.useState(null);
+  const [bestandNaam, setBestandNaam] = React.useState("");
+  const [fout, setFout] = React.useState("");
 
   const handleFile = (e) => {
     const file = e.target.files[0];
