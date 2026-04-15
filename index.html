@@ -1,1098 +1,640 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visibility Scan — The Industry Playground</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-    <script type="text/babel" data-presets="react">
-
-
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visibility Scan — The Industry Playground</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E2DAC8; font-family: Georgia, serif; min-height: 100vh; }
+  .header { background: #650D17; padding: 18px 32px; }
+  .header-sub { color: rgba(226,218,200,0.55); font-size: 9px; letter-spacing: 3px; font-family: sans-serif; }
+  .header-title { color: #E2DAC8; font-size: 20px; font-weight: 700; margin-top: 4px; }
+  .header-les { color: #c4b48a; font-size: 12px; font-family: sans-serif; margin-top: 2px; }
+  .container { max-width: 700px; margin: 0 auto; padding: 32px 24px; }
+  .card { background: #FAF7F2; border: 1px solid #cfc5ae; border-radius: 6px; padding: 20px 22px; margin-bottom: 20px; }
+  .label { color: #9F926A; font-size: 10px; letter-spacing: 2px; font-family: sans-serif; font-weight: 700; margin-bottom: 4px; }
+  .sub { color: #7a6555; font-family: sans-serif; font-size: 12px; margin-bottom: 16px; }
+  .tekst { color: #2e1f14; }
+  h2 { color: #2e1f14; font-size: 26px; margin-bottom: 8px; line-height: 1.2; }
+  .btn { background: #650D17; color: #E2DAC8; border: none; border-radius: 4px; padding: 12px 28px; font-size: 14px; font-family: sans-serif; cursor: pointer; font-weight: 700; margin-top: 16px; }
+  .btn:hover { background: #7a0f1c; }
+  .btn-outline { background: transparent; border: 1px solid #cfc5ae; color: #7a6555; border-radius: 3px; padding: 6px 14px; font-size: 12px; font-family: sans-serif; cursor: pointer; }
+  .stat-cards { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-card { background: #FAF7F2; border: 1px solid #cfc5ae; border-radius: 6px; padding: 16px 18px; flex: 1; min-width: 140px; }
+  .stat-num { color: #2e1f14; font-size: 28px; font-weight: 700; font-family: sans-serif; line-height: 1; }
+  .stat-label { color: #7a6555; font-size: 11px; font-family: sans-serif; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-sub { color: #7a6555; font-size: 12px; font-family: sans-serif; margin-top: 4px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { width: 80px; font-family: sans-serif; font-size: 12px; color: #2e1f14; flex-shrink: 0; }
+  .bar-track { flex: 1; background: rgba(207,197,174,0.4); border-radius: 3px; height: 24px; position: relative; overflow: hidden; }
+  .bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px; }
+  .bar-val { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; font-family: sans-serif; font-weight: 600; color: #7a6555; }
+  .bar-val-light { color: #FAF7F2; }
+  .chip { border-radius: 3px; padding: 2px 7px; font-size: 11px; font-family: sans-serif; font-weight: 600; display: inline-block; }
+  .inzicht-box { background: rgba(159,146,106,0.1); border: 1px solid rgba(159,146,106,0.3); border-radius: 4px; padding: 10px 14px; margin-top: 14px; color: #2e1f14; font-family: sans-serif; font-size: 13px; line-height: 1.7; }
+  .post-item { padding: 12px 0; border-bottom: 1px solid #cfc5ae; display: flex; gap: 14px; align-items: flex-start; }
+  .post-item:last-child { border-bottom: none; }
+  .post-num { min-width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; }
+  .post-tekst { color: #2e1f14; font-family: sans-serif; font-size: 13px; font-style: italic; line-height: 1.5; margin-bottom: 8px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .verband-item { border: 1px solid #cfc5ae; border-radius: 4px; padding: 14px 16px; margin-bottom: 12px; }
+  .verband-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .haakje-row { border-bottom: 1px solid rgba(207,197,174,0.3); }
+  .haakje-header { display: flex; justify-content: space-between; align-items: center; padding: 11px 0 6px; cursor: pointer; }
+  .haakje-voorbeelden { border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+  .voorbeeld-item { display: flex; gap: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(207,197,174,0.3); }
+  .voorbeeld-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .voorbeeld-num { min-width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; color: #FAF7F2; }
+  .upload-zone { border: 2px dashed #cfc5ae; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; background: #FAF7F2; }
+  .upload-zone:hover { border-color: #9F926A; }
+  .upload-input { display: none; }
+  .fout { background: rgba(101,13,23,0.08); border: 1px solid rgba(101,13,23,0.3); border-radius: 4px; padding: 10px 14px; color: #650D17; font-family: sans-serif; font-size: 13px; margin-top: 12px; }
+  .volgende { background: #650D17; border-radius: 6px; padding: 20px 22px; text-align: center; }
+  .stap-item { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .stap-num { min-width: 22px; height: 22px; border-radius: 50%; background: #650D17; color: #E2DAC8; font-size: 11px; font-weight: 700; font-family: sans-serif; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .top5-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+  .top5-num { min-width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; margin-top: 2px; }
+  .top5-content { flex: 1; padding-left: 14px; }
+  .strategisch { background: rgba(101,13,23,0.05); border: 1px solid rgba(101,13,23,0.2); border-radius: 6px; padding: 14px 18px; margin-bottom: 12px; }
+  #fase-intro, #fase-upload, #fase-resultaat { display: none; }
+</style>
+</head>
+<body>
+ 
+<div class="header">
+  <div class="header-sub">THE INDUSTRY PLAYGROUND</div>
+  <div class="header-title">Visibility Scan</div>
+  <div class="header-les">Les 1 · Jouw content onder de loep</div>
+</div>
+ 
+<div class="container">
+ 
+  <!-- INTRO -->
+  <div id="fase-intro">
+    <h2>Wat doet jouw content<br>eigenlijk?</h2>
+    <p style="color:#7a6555;font-family:sans-serif;font-size:15px;line-height:1.7;margin-bottom:32px;">Niet wat jij denkt dat het doet, maar wat de data zegt. Upload je Meta export en ontdek in 30 seconden welke posts werken, welke niet, en waarom.</p>
+ 
+    <div class="card" style="margin-bottom:20px;">
+      <div class="label">ELKE POST HEEFT EEN FUNCTIE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+        <div style="background:#FAF7F2;border:1px solid #cfc5ae;border-left:4px solid #4a7c59;border-radius:4px;padding:12px 14px;">
+          <div style="font-size:20px;margin-bottom:4px;">📡</div>
+          <div style="color:#2e1f14;font-weight:700;font-family:sans-serif;font-size:14px;">Bereiken</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:12px;margin-top:3px;">Nieuwe mensen zien je</div>
+        </div>
+        <div style="background:#FAF7F2;border:1px solid #cfc5ae;border-left:4px solid #9F926A;border-radius:4px;padding:12px 14px;">
+          <div style="font-size:20px;margin-bottom:4px;">🤝</div>
+          <div style="color:#2e1f14;font-weight:700;font-family:sans-serif;font-size:14px;">Verbinden</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:12px;margin-top:3px;">Mensen vertrouwen je</div>
+        </div>
+        <div style="background:#FAF7F2;border:1px solid #cfc5ae;border-left:4px solid #c47a2a;border-radius:4px;padding:12px 14px;">
+          <div style="font-size:20px;margin-bottom:4px;">⚡</div>
+          <div style="color:#2e1f14;font-weight:700;font-family:sans-serif;font-size:14px;">Activeren</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:12px;margin-top:3px;">Mensen bewegen — DM, comment, klik</div>
+        </div>
+        <div style="background:#FAF7F2;border:1px solid #cfc5ae;border-left:4px solid #650D17;border-radius:4px;padding:12px 14px;">
+          <div style="font-size:20px;margin-bottom:4px;">💳</div>
+          <div style="color:#2e1f14;font-weight:700;font-family:sans-serif;font-size:14px;">Verkopen</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:12px;margin-top:3px;">Zit in DMs en ManyChat</div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" style="margin-bottom:28px;">
+      <div class="label">ZO EXPORTEER JE JE META DATA</div>
+      <div style="margin-top:14px;">
+        <div class="stap-item"><div class="stap-num">1</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Ga naar Meta Business Suite → business.facebook.com</div></div>
+        <div class="stap-item"><div class="stap-num">2</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Klik links op Inzichten → dan op Content</div></div>
+        <div class="stap-item"><div class="stap-num">3</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">⚠️ Selecteer bovenaan Instagram (staat standaard op Facebook)</div></div>
+        <div class="stap-item"><div class="stap-num">4</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Selecteer rechtsboven: Afgelopen 3 maanden (of langer)</div></div>
+        <div class="stap-item"><div class="stap-num">5</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Klik op het export-icoontje → kies CSV downloaden</div></div>
+        <div class="stap-item"><div class="stap-num">6</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Upload het bestand hieronder</div></div>
+      </div>
+    </div>
+ 
+    <button class="btn" onclick="toonFase('upload')">→ Ik ben klaar om te uploaden</button>
+  </div>
+ 
+  <!-- UPLOAD -->
+  <div id="fase-upload">
+    <h2 style="margin-bottom:8px;">Upload je Meta CSV</h2>
+    <p style="color:#7a6555;font-family:sans-serif;font-size:14px;margin-bottom:24px;">Het bestand blijft op jouw apparaat — er wordt niets verstuurd.</p>
+    <div class="upload-zone" onclick="document.getElementById('csv-input').click()">
+      <div style="font-size:40px;margin-bottom:12px;">📂</div>
+      <div style="color:#2e1f14;font-family:sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;">Sleep je CSV hier naartoe</div>
+      <div style="color:#7a6555;font-family:sans-serif;font-size:13px;">of klik om een bestand te kiezen</div>
+    </div>
+    <input type="file" id="csv-input" class="upload-input" accept=".csv" onchange="handleFile(event)">
+    <div id="fout-msg" class="fout" style="display:none;"></div>
+    <button class="btn-outline" onclick="toonFase('intro')" style="margin-top:16px;">← Terug</button>
+  </div>
+ 
+  <!-- RESULTAAT -->
+  <div id="fase-resultaat">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h2 style="font-size:24px;">Jouw content analyse</h2>
+        <div id="bestand-naam" style="color:#7a6555;font-family:sans-serif;font-size:12px;"></div>
+      </div>
+      <button class="btn-outline" onclick="toonFase('upload')">Nieuw bestand</button>
+    </div>
+    <div id="resultaat-inhoud"></div>
+  </div>
+ 
+</div>
+ 
+<script>
 const B = {
-  bordeaux: "#650D17",
-  goud:     "#9F926A",
-  goudLight:"#c4b48a",
-  creme:    "#E2DAC8",
-  cremeDark:"#cfc5ae",
-  wit:      "#FAF7F2",
-  tekst:    "#2e1f14",
-  sub:      "#7a6555",
+  bordeaux: "#650D17", goud: "#9F926A", goudLight: "#c4b48a",
+  creme: "#E2DAC8", cremeDark: "#cfc5ae", wit: "#FAF7F2",
+  tekst: "#2e1f14", sub: "#7a6555"
 };
-
-const FUNCTIES = {
-  bereiken:  { kleur: "#4a7c59", label: "Bereiken",  icon: "📡" },
-  verbinden: { kleur: "#9F926A", label: "Verbinden", icon: "🤝" },
-  activeren: { kleur: "#c47a2a", label: "Activeren", icon: "⚡" },
-  verkopen:  { kleur: "#650D17", label: "Verkopen",  icon: "💳" },
+ 
+const TYPE_KLEUREN = {
+  "Visie": "#650D17", "Klantverhaal": "#4a7c59", "Klantverhaal + CTA": "#2d6644",
+  "HOT Lead": "#c47a2a", "Help": "#9F926A", "Rolmodel": "#7a5c9e",
+  "Persoonlijk": "#9e5c7a", "Hub": "#5c7a9e", "Overig": "#cfc5ae"
 };
-
-// Type → primaire functie mapping
-const TYPE_FUNCTIE = {
-  "IG-reel":                { primair: "bereiken",  secundair: "verbinden" },
-  "Instagram-carrousel":    { primair: "verbinden", secundair: "activeren" },
-  "Instagram-afbeelding":   { primair: "verbinden", secundair: "bereiken"  },
+const HAAKJE_KLEUREN = {
+  "Klantverhaal": "#4a7c59", "Confrontatie": "#650D17", "Stellingname": "#c47a2a",
+  "Resultaat-opener": "#7a5c9e", "Ik-verhaal": "#9F926A", "Persoonlijk ik-verhaal": "#9e5c7a",
+  "Vraag": "#5c7a9e", "Emoji-opener": "#c4a020", "Getal/resultaat": "#3a6c8a", "Overig": "#cfc5ae"
 };
-
+ 
+let openHaakje = null;
+ 
+function toonFase(fase) {
+  ['intro','upload','resultaat'].forEach(f => {
+    document.getElementById('fase-' + f).style.display = f === fase ? 'block' : 'none';
+  });
+}
+ 
 function parseCSV(text) {
   const results = [];
   let cur = "", inQuotes = false, row = [];
-  const clean = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const clean = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
   for (let i = 0; i <= clean.length; i++) {
     const ch = clean[i];
-    if (i === clean.length) { row.push(cur.trim()); if (row.some(v => v)) results.push(row); break; }
+    if (i === clean.length) { row.push(cur.trim()); if (row.some(v=>v)) results.push(row); break; }
     if (ch === '"') { inQuotes = !inQuotes; }
     else if (ch === "," && !inQuotes) { row.push(cur.trim()); cur = ""; }
-    else if (ch === "\n" && !inQuotes) { row.push(cur.trim()); if (row.some(v => v)) results.push(row); row = []; cur = ""; }
+    else if (ch === "\n" && !inQuotes) { row.push(cur.trim()); if (row.some(v=>v)) results.push(row); row=[]; cur=""; }
     else { cur += ch; }
   }
   return results;
 }
-
+ 
 function analyseerCSV(inhoud) {
   const parsed = parseCSV(inhoud);
   if (parsed.length < 2) return null;
-
-  const headers = parsed[0].map(h => h.toLowerCase().replace(/['"]/g, "").replace(/^\uFEFF/, "").trim());
+  const headers = parsed[0].map(h => h.toLowerCase().replace(/['"]/g,"").replace(/^\uFEFF/,"").trim());
   const rows = parsed.slice(1).map(vals => {
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = (vals[i] || "").replace(/^"|"$/g, "").trim(); });
+    headers.forEach((h,i) => { obj[h] = (vals[i]||"").replace(/^"|"$/g,"").trim(); });
     return obj;
-  }).filter(r => Object.values(r).some(v => v));
-
+  }).filter(r => Object.values(r).some(v=>v));
+ 
   const find = (keys) => headers.find(h => keys.some(k => h.includes(k))) || null;
   const bereikCol   = find(["bereik"]);
   const savesCol    = find(["opgeslagen"]);
   const commentsCol = find(["opmerkingen"]);
-  const likesCol    = find(["vind-ik-leuks", "likes"]);
-  const typeCol     = find(["berichttype", "type"]);
-  const beschCol    = find(["omschrijving", "beschrijving", "caption"]);
-
-  const tijdCol = find(["publicatietijdstip", "tijdstip", "datum", "date", "published", "time"]);
-
-  const toN = (v) => parseFloat((v || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
-
+  const likesCol    = find(["vind-ik-leuks","likes"]);
+  const typeCol     = find(["berichttype","type"]);
+  const beschCol    = find(["omschrijving","beschrijving","caption"]);
+  const tijdCol     = find(["publicatietijdstip","tijdstip","datum","date","published","time"]);
+ 
+  const toN = (v) => parseFloat((v||"0").replace(/[^0-9.,]/g,"").replace(",",".")) || 0;
   const parseDate = (v) => {
     if (!v) return null;
-    // MM/DD/YYYY HH:MM or YYYY-MM-DD
     const m1 = v.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
-    if (m1) return new Date(+m1[3], +m1[1]-1, +m1[2], +m1[4], +m1[5]);
+    if (m1) return new Date(+m1[3],+m1[1]-1,+m1[2],+m1[4],+m1[5]);
     const m2 = v.match(/(\d{4})-(\d{2})-(\d{2})/);
-    if (m2) return new Date(+m2[1], +m2[2]-1, +m2[3]);
+    if (m2) return new Date(+m2[1],+m2[2]-1,+m2[3]);
     return null;
   };
-
-  let totBereik = 0, totSaves = 0, totComments = 0;
-  let topPost = null, topScore = 0;
-  const typeStats = {};
-  const allePostsGescoord = [];
-  const dagStats  = {}; // 0=zo..6=za
-  const uurStats  = {};
-  const weekStats = {};
-  const captionStats = { kort: {b:0,s:0,n:0}, middel: {b:0,s:0,n:0}, lang: {b:0,s:0,n:0} };
-  const DAGEN_NL = ["Zo","Ma","Di","Wo","Do","Vr","Za"];
-
+ 
+  let totBereik=0, totSaves=0, totComments=0;
+  const typeStats={}, allePostsGescoord=[], dagStats={}, weekStats={};
+  const captionStats={kort:{b:0,s:0,n:0},middel:{b:0,s:0,n:0},lang:{b:0,s:0,n:0}};
+  const DAGEN_NL=["Zo","Ma","Di","Wo","Do","Vr","Za"];
+ 
   rows.forEach(r => {
     const bereik   = bereikCol   ? toN(r[bereikCol])   : 0;
     const saves    = savesCol    ? toN(r[savesCol])    : 0;
     const comments = commentsCol ? toN(r[commentsCol]) : 0;
     const likes    = likesCol    ? toN(r[likesCol])    : 0;
     const type     = typeCol     ? r[typeCol] : "post";
-    const score    = bereik + saves * 3 + comments * 2 + likes;
+    const score    = bereik + saves*3 + comments*2 + likes;
     const tekst    = beschCol    ? r[beschCol] : "";
-
-    totBereik += bereik; totSaves += saves; totComments += comments;
-
-    if (!typeStats[type]) typeStats[type] = { bereik:0, saves:0, comments:0, likes:0, count:0 };
-    typeStats[type].bereik += bereik; typeStats[type].saves += saves;
-    typeStats[type].comments += comments; typeStats[type].likes += likes;
-    typeStats[type].count += 1;
-
-    allePostsGescoord.push({ bereik, saves, comments, likes, type, score, tekst });
-    if (score > topScore) { topScore = score; topPost = { bereik, saves, comments, likes, type, tekst }; }
-
-    // Content type detectie — scoring-based (niet volgorde-afhankelijk)
-    const t = tekst.toLowerCase();
-    const scores = {
-      "Klantverhaal": 0,
-      "HOT Lead":     0,
-      "Visie":        0,
-      "Persoonlijk":  0,
-      "Rolmodel":     0,
-      "Help":         0,
-      "Hub":          0,
-    };
-
-    // KLANTVERHAAL — klant als HOOFDONDERWERP, minimaal 2 sterke signalen nodig
-    // Sterke signalen: klant als handelend subject met resultaat
-    if (/\btoen (ze|hij) bij me (kwam|kwamen)\b/.test(t)) scores["Klantverhaal"] += 6;
-    if (/\b(mijn klant|een klant van me|een van mijn klanten)\b/.test(t)) scores["Klantverhaal"] += 5;
-    if (/\bze (verdiende|haalde|deed|draaide|bouwde|realiseerde|verdubbelde)\b/.test(t) && /\b\d/.test(t)) scores["Klantverhaal"] += 5;
-    if (/\bhij (verdiende|haalde|deed|draaide|bouwde|realiseerde|verdubbelde)\b/.test(t) && /\b\d/.test(t)) scores["Klantverhaal"] += 5;
-    if (/\b(ze|hij) (stapte|startte|besloot|ging)\b/.test(t) && /\b(bij me|met me|in het programma|in de club)\b/.test(t)) scores["Klantverhaal"] += 4;
-    if (/\b(haar|zijn) (bedrijf|omzet|leven|resultaat)\b/.test(t) && /\b\d/.test(t)) scores["Klantverhaal"] += 3;
-    // Zwakke signalen (ze/hij alleen is niet genoeg)
-    if (/\bze (deed|ging|had|werkte|zat|maakte)\b/.test(t)) scores["Klantverhaal"] += 1;
-    if (/\bhij (deed|ging|had|werkte|zat|maakte)\b/.test(t)) scores["Klantverhaal"] += 1;
-    // Bescherming: post gaat over IK → geen klantverhaal
-    if (/\b(mijn omzet|mijn bedrijf|ik verdien|ik haalde|ik verdubbelde|mijn jaar|dit jaar (komt|is|werd)|ik verwed)\b/.test(t)) scores["Klantverhaal"] -= 5;
-    if (/^(ik |dit jaar |afgelopen jaar |vorig jaar )/.test(t)) scores["Klantverhaal"] -= 2;
-
-    // HOT LEAD — duidelijke CTA naar actie, DM, comment, weggever, aanbod
-    if (/\b(comment|reageer|dm|stuur me|stuur een|meld je aan|wachtlijst|schrijf je in|klik op de link|link in bio|swipe up)\b/.test(t)) scores["HOT Lead"] += 5;
-    if (/\b(ik zoek|ik heb nog|nog \d+ plekken|plekken vrij|gratis|weggever|download|audio|masterclass|training)\b/.test(t)) scores["HOT Lead"] += 3;
-    if (/\b(wil jij|wil je ook|klinkt dit als jou|herken je dit)\b/.test(t)) scores["HOT Lead"] += 2;
-    // Bescherming: als tekst een verhaal vertelt zonder CTA-taal, geen HOT Lead
-    if (/\b(ze deed|ze ging|hij deed|hij ging|toentertijd|destijds)\b/.test(t)) scores["HOT Lead"] -= 3;
-
-    // VISIE — standpunt, mening over de markt, confronterend
-    if (/\b(stop met|de markt|iedereen (zegt|denkt|doet)|de meeste ondernemers|de industrie|het systeem)\b/.test(t)) scores["Visie"] += 4;
-    if (/\b(waarheid|illusie|leugen|mythe|het klopt niet|dat werkt niet|niemand vertelt je)\b/.test(t)) scores["Visie"] += 3;
-    if (/\b(ik geloof|ik denk|ik vind|mijn mening|mijn visie|mijn standpunt)\b/.test(t)) scores["Visie"] += 2;
-    if (/\b(verwed|ik verwed|ik durf te wedden|ik weet zeker)\b/.test(t)) scores["Visie"] += 3;
-
-    // PERSOONLIJK — eigen verhaal, verleden, leven buiten business
-    if (/\b(mijn (man|kind|zoon|dochter|moeder|vader|ouders|gezin|huis|tuin|zwembad|vakantie|leven buiten))\b/.test(t)) scores["Persoonlijk"] += 5;
-    if (/\b(vroeger|destijds|als kind|op school|mijn jeugd|jaren geleden|in \d{4})\b/.test(t)) scores["Persoonlijk"] += 3;
-    if (/\b(persoonlijk|emotioneel|ik huilde|ik schaamde|ik was bang|ik twijfelde)\b/.test(t)) scores["Persoonlijk"] += 3;
-    if (/\btoen ik\b/.test(t) && /\b(nog niet|nog geen|begon|startte|leerde)\b/.test(t)) scores["Persoonlijk"] += 2;
-
-    // ROLMODEL — ik-verhaal over business zonder CTA, eigen resultaten/inzichten
-    if (/^(ik |dit jaar |afgelopen jaar |vorig jaar )/.test(t) && /\b(omzet|verdien|mijn bedrijf|mijn resultaat|ik haalde|ik deed|ik realiseerde)\b/.test(t)) scores["Rolmodel"] += 4;
-    if (/\b(dit jaar (komt|is|werd|draaide)|afgelopen jaar (deed|haalde|realiseerde))\b/.test(t)) scores["Rolmodel"] += 3;
-    if (/^(ik |ik,)/.test(t) && scores["Klantverhaal"] < 3 && scores["Persoonlijk"] < 3) scores["Rolmodel"] += 1;
-
-    // HELP — instructief, stappen, tips, hoe doe je X
-    if (/\b(\d\s*(manieren|tips|stappen|redenen|fouten)|hoe je|zo doe je|zo werkt|stappenplan)\b/.test(t)) scores["Help"] += 4;
-    if (/\b(tip:|stap \d|ten eerste|ten tweede|ten derde|als eerste|als tweede)\b/.test(t)) scores["Help"] += 3;
-    if (/\b(formule|systeem|methode|aanpak|werkwijze|framework)\b/.test(t) && !/\b(mijn|ons)\b/.test(t)) scores["Help"] += 2;
-
-    // HUB — verwijst naar extern platform
-    if (/\b(podcast|blog|serie|aflevering|episode|youtube|link in bio|nieuwsbrief)\b/.test(t)) scores["Hub"] += 5;
-
-    // Winnaar bepalen
-    const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
-    let contentType = winner[1] > 0 ? winner[0] : "Overig";
-
-    // CTA / ManyChat detectie
-    const heeftCTA      = /\b(comment|reageer|dm\b|stuur me|stuur een|meld je|wachtlijst|schrijf je in|klik op|link in bio|swipe up)\b/i.test(tekst);
-    const heeftManyChat = /\bcomment\b.{0,40}\b(voor|om|en|krijg|dan|stuur)\b|\b(comment|reageer)\s+[A-Z]{2,}/i.test(tekst) || /\btype\b.{0,20}\b(hieronder|below|ja|yes)\b/i.test(tekst);
-
-    // Hybride: klantverhaal MÉT activatie-CTA
-    if (contentType === "Klantverhaal" && heeftCTA) contentType = "Klantverhaal + CTA";
-
-    allePostsGescoord[allePostsGescoord.length - 1].contentType  = contentType;
-    allePostsGescoord[allePostsGescoord.length - 1].heeftCTA     = heeftCTA;
-    allePostsGescoord[allePostsGescoord.length - 1].heeftManyChat = heeftManyChat;
-
-    // Haakje classificatie per post (voor kruisanalyse)
-    const tk2 = tekst.toLowerCase().trim();
-    let haakjeType = "Overig";
-    if (/^ik\b/.test(tk2) && /\b(verwed|weet zeker|durf)\b/.test(tk2))            haakjeType = "Stellingname";
-    else if (/^(ze|hij|mijn klant|een klant|toen ze|toen hij)/.test(tk2))          haakjeType = "Klantverhaal";
-    else if (/\b(stop met|iedereen (zegt|denkt|doet)|de markt|waarheid)\b/.test(tk2)) haakjeType = "Confrontatie";
-    else if (/^\d|^in \d{4}|^\d{4}/.test(tk2))                                    haakjeType = "Getal/resultaat";
-    else if (/^(dit jaar|afgelopen jaar|vorig jaar)/.test(tk2) && /\b\d/.test(tk2)) haakjeType = "Resultaat-opener";
-    else if (tk2.trim().startsWith("wat ") || tk2.trim().startsWith("hoe ") || tk2.trim().endsWith("?")) haakjeType = "Vraag";
-    else if (/^ik\b/.test(tk2) && /\b(vroeger|destijds|toen ik|als kind)\b/.test(tk2)) haakjeType = "Persoonlijk ik-verhaal";
-    else if (/^ik\b/.test(tk2))                                                    haakjeType = "Ik-verhaal";
-    else if (/^(😱|🚨|⚡|🔥|💥)/.test(tekst.trim()))                              haakjeType = "Emoji-opener";
-
-    allePostsGescoord[allePostsGescoord.length - 1].haakjeType = haakjeType;
-
-    // Dag + uur
-    const dt = tijdCol ? parseDate(r[tijdCol]) : null;
+ 
+    totBereik+=bereik; totSaves+=saves; totComments+=comments;
+    if (!typeStats[type]) typeStats[type]={bereik:0,saves:0,comments:0,likes:0,count:0};
+    typeStats[type].bereik+=bereik; typeStats[type].saves+=saves;
+    typeStats[type].comments+=comments; typeStats[type].likes+=likes; typeStats[type].count+=1;
+    allePostsGescoord.push({bereik,saves,comments,likes,type,score,tekst});
+ 
+    const t=tekst.toLowerCase();
+    const sc={"Klantverhaal":0,"HOT Lead":0,"Visie":0,"Persoonlijk":0,"Rolmodel":0,"Help":0,"Hub":0};
+    if (/\btoen (ze|hij) bij me (kwam|kwamen)\b/.test(t)) sc["Klantverhaal"]+=6;
+    if (/\b(mijn klant|een klant van me|een van mijn klanten)\b/.test(t)) sc["Klantverhaal"]+=5;
+    if (/\bze (verdiende|haalde|deed|draaide|bouwde|realiseerde|verdubbelde)\b/.test(t)&&/\b\d/.test(t)) sc["Klantverhaal"]+=5;
+    if (/\bhij (verdiende|haalde|deed|draaide|bouwde|realiseerde|verdubbelde)\b/.test(t)&&/\b\d/.test(t)) sc["Klantverhaal"]+=5;
+    if (/\b(ze|hij) (stapte|startte|besloot|ging)\b/.test(t)&&/\b(bij me|met me|in het programma)\b/.test(t)) sc["Klantverhaal"]+=4;
+    if (/\bze (deed|ging|had|werkte|zat|maakte)\b/.test(t)) sc["Klantverhaal"]+=1;
+    if (/\bhij (deed|ging|had|werkte|zat|maakte)\b/.test(t)) sc["Klantverhaal"]+=1;
+    if (/\b(mijn omzet|mijn bedrijf|ik verdien|ik haalde|ik verdubbelde|ik verwed)\b/.test(t)) sc["Klantverhaal"]-=5;
+    if (/^(ik |dit jaar |afgelopen jaar |vorig jaar )/.test(t)) sc["Klantverhaal"]-=2;
+    if (/\b(comment|reageer|dm|stuur me|meld je aan|wachtlijst|link in bio)\b/.test(t)) sc["HOT Lead"]+=5;
+    if (/\b(gratis|weggever|download|audio|masterclass|training)\b/.test(t)) sc["HOT Lead"]+=3;
+    if (/\b(ze deed|ze ging|hij deed|hij ging)\b/.test(t)) sc["HOT Lead"]-=3;
+    if (/\b(stop met|de markt|iedereen (zegt|denkt|doet)|waarheid|illusie)\b/.test(t)) sc["Visie"]+=4;
+    if (/\b(verwed|ik verwed|ik durf te wedden|ik weet zeker)\b/.test(t)) sc["Visie"]+=3;
+    if (/\b(mijn (man|kind|zoon|dochter|gezin|huis|tuin|vakantie))\b/.test(t)) sc["Persoonlijk"]+=5;
+    if (/\b(vroeger|destijds|als kind|jaren geleden)\b/.test(t)) sc["Persoonlijk"]+=3;
+    if (/^(ik |dit jaar |afgelopen jaar |vorig jaar )/.test(t)&&/\b(omzet|verdien|mijn resultaat)\b/.test(t)) sc["Rolmodel"]+=4;
+    if (/\b(\d\s*(tips|stappen|manieren)|hoe je|zo doe je)\b/.test(t)) sc["Help"]+=4;
+    if (/\b(podcast|blog|aflevering|youtube|link in bio)\b/.test(t)) sc["Hub"]+=5;
+    const winner=Object.entries(sc).sort((a,b)=>b[1]-a[1])[0];
+    let contentType=winner[1]>0?winner[0]:"Overig";
+    const heeftCTA=/\b(comment|reageer|dm\b|stuur me|meld je|wachtlijst|link in bio)\b/i.test(tekst);
+    const heeftManyChat=/\bcomment\b.{0,40}\b(voor|om|krijg)\b/i.test(tekst)||/\b(comment|reageer)\s+[A-Z]{2,}/i.test(tekst);
+    if (contentType==="Klantverhaal"&&heeftCTA) contentType="Klantverhaal + CTA";
+ 
+    const tk2=tekst.toLowerCase().trim();
+    let haakjeType="Overig";
+    if (/^ik\b/.test(tk2)&&/\b(verwed|weet zeker)\b/.test(tk2)) haakjeType="Stellingname";
+    else if (/^(ze|hij|mijn klant|een klant|toen ze|toen hij)/.test(tk2)) haakjeType="Klantverhaal";
+    else if (/\b(stop met|iedereen (zegt|denkt|doet)|de markt|waarheid)\b/.test(tk2)) haakjeType="Confrontatie";
+    else if (/^(dit jaar|afgelopen jaar|vorig jaar)/.test(tk2)&&/\b\d/.test(tk2)) haakjeType="Resultaat-opener";
+    else if (tk2.startsWith("wat ")||tk2.startsWith("hoe ")||tk2.endsWith("?")) haakjeType="Vraag";
+    else if (/^ik\b/.test(tk2)&&/\b(vroeger|destijds|toen ik)\b/.test(tk2)) haakjeType="Persoonlijk ik-verhaal";
+    else if (/^ik\b/.test(tk2)) haakjeType="Ik-verhaal";
+    else if (/^(😱|🚨|⚡|🔥|💥)/.test(tekst.trim())) haakjeType="Emoji-opener";
+ 
+    const last=allePostsGescoord[allePostsGescoord.length-1];
+    last.contentType=contentType; last.heeftCTA=heeftCTA; last.heeftManyChat=heeftManyChat; last.haakjeType=haakjeType;
+ 
+    const dt=tijdCol?parseDate(r[tijdCol]):null;
     if (dt) {
-      const dag = dt.getDay(); // 0=zo
-      const uur = dt.getHours();
-      const week = `${dt.getFullYear()}-W${String(Math.ceil((dt - new Date(dt.getFullYear(),0,1)) / 604800000)).padStart(2,"0")}`;
-      if (!dagStats[dag])  dagStats[dag]  = { bereik:0, saves:0, comments:0, count:0 };
-      dagStats[dag].bereik += bereik; dagStats[dag].saves += saves;
-      dagStats[dag].comments += comments; dagStats[dag].count += 1;
-      if (!uurStats[uur])  uurStats[uur]  = { bereik:0, count:0 };
-      uurStats[uur].bereik += bereik; uurStats[uur].count += 1;
-      if (!weekStats[week]) weekStats[week] = 0;
-      weekStats[week] += 1;
+      const dag=dt.getDay();
+      const week=`${dt.getFullYear()}-W${String(Math.ceil((dt-new Date(dt.getFullYear(),0,1))/604800000)).padStart(2,"0")}`;
+      if (!dagStats[dag]) dagStats[dag]={bereik:0,saves:0,count:0};
+      dagStats[dag].bereik+=bereik; dagStats[dag].saves+=saves; dagStats[dag].count+=1;
+      if (!weekStats[week]) weekStats[week]=0;
+      weekStats[week]+=1;
     }
-
-    // Caption lengte
-    const len = tekst.length;
-    const cat = len < 150 ? "kort" : len < 400 ? "middel" : "lang";
-    captionStats[cat].b += bereik; captionStats[cat].s += saves; captionStats[cat].n += 1;
+    const len=tekst.length;
+    const cat=len<150?"kort":len<400?"middel":"lang";
+    captionStats[cat].b+=bereik; captionStats[cat].s+=saves; captionStats[cat].n+=1;
   });
-
-  const top10 = [...allePostsGescoord].sort((a, b) => b.score - a.score).slice(0, 10);
-
-  // Haakje patroon analyse
-  const top5 = top10.slice(0, 5);
-  const haakjePatronen = {
-    ik: top5.filter(p => /^ik\b/i.test(p.tekst.trim())).length,
-    confrontatie: top5.filter(p => /\bstop met\b|\bje doet\b|\bje denkt\b|\bniet omdat\b|\bje probleem\b/i.test(p.tekst)).length,
-    stelling: top5.filter(p => /^[A-Z][^?!.]{10,40}[.]/.test(p.tekst.trim()) || /\b(is niet|zijn niet|werkt niet|bestaat niet)\b/i.test(p.tekst)).length,
-    klantverhaal: top5.filter(p => /\bze deed\b|\bze ging\b|\bze had\b|\bhij deed\b/i.test(p.tekst)).length,
-    vraag: top5.filter(p => p.tekst.trim().endsWith("?") || p.tekst.trim().startsWith("Wat ") || p.tekst.trim().startsWith("Hoe ")).length,
-  };
-  const dominantPatroon = Object.entries(haakjePatronen).sort((a,b) => b[1]-a[1])[0];
-  const patroonnamen = { ik: "ik-verhaal (rolmodel)", confrontatie: "confrontatie", stelling: "uitgesproken stelling", klantverhaal: "klantverhaal", vraag: "vraag" };
-
-  // Content type verdeling
-  const contentTypeStats = {};
-  allePostsGescoord.forEach(p => {
-    if (!contentTypeStats[p.contentType]) contentTypeStats[p.contentType] = { bereik:0, saves:0, count:0 };
-    contentTypeStats[p.contentType].bereik += p.bereik;
-    contentTypeStats[p.contentType].saves  += p.saves;
-    contentTypeStats[p.contentType].count  += 1;
+ 
+  const top10=[...allePostsGescoord].sort((a,b)=>b.score-a.score).slice(0,10);
+  const n=rows.length;
+  const gemBereikTotaal=Math.round(totBereik/n);
+  const gemSavesTotaal=+(totSaves/n).toFixed(1);
+ 
+  const typeRanking=Object.entries(typeStats).map(([type,s])=>({
+    type, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1),
+    gemComments:+(s.comments/s.count).toFixed(1), count:s.count
+  })).sort((a,b)=>b.gemBereik-a.gemBereik);
+ 
+  const contentTypeStats={};
+  allePostsGescoord.forEach(p=>{
+    if (!contentTypeStats[p.contentType]) contentTypeStats[p.contentType]={bereik:0,saves:0,count:0};
+    contentTypeStats[p.contentType].bereik+=p.bereik;
+    contentTypeStats[p.contentType].saves+=p.saves;
+    contentTypeStats[p.contentType].count+=1;
   });
-  const contentTypeRanking = Object.entries(contentTypeStats)
-    .map(([ct, s]) => ({ ct, gemBereik: Math.round(s.bereik/s.count), gemSaves: +(s.saves/s.count).toFixed(1), count: s.count }))
-    .sort((a,b) => b.gemBereik - a.gemBereik);
-
-  // Dag ranking
-  const dagRanking = Object.entries(dagStats)
-    .map(([dag, s]) => ({ dag: DAGEN_NL[+dag], dagNr: +dag, gemBereik: Math.round(s.bereik/s.count), gemSaves: +(s.saves/s.count).toFixed(1), count: s.count }))
-    .sort((a, b) => b.gemBereik - a.gemBereik);
-
-  // Beste uren (top 3)
-  const uurRanking = Object.entries(uurStats)
-    .filter(([, s]) => s.count >= 2)
-    .map(([uur, s]) => ({ uur: +uur, gemBereik: Math.round(s.bereik/s.count), count: s.count }))
-    .sort((a, b) => b.gemBereik - a.gemBereik)
-    .slice(0, 3);
-
-  // Consistentie
-  const wekenMetPosts = Object.values(weekStats);
-  const gemPostsPerWeek = wekenMetPosts.length ? +(wekenMetPosts.reduce((a,b)=>a+b,0) / wekenMetPosts.length).toFixed(1) : 0;
-  const maxPostsPerWeek = Math.max(...wekenMetPosts);
-  const minPostsPerWeek = Math.min(...wekenMetPosts);
-
-  // Caption
-  const captionAdvies = Object.entries(captionStats)
-    .filter(([,v]) => v.n > 0)
-    .map(([cat, v]) => ({ cat, label: cat === "kort" ? "Kort (<150 tekens)" : cat === "middel" ? "Middel (150-400)" : "Lang (400+)", gemBereik: Math.round(v.b/v.n), gemSaves: +(v.s/v.n).toFixed(1), count: v.n }))
-    .sort((a, b) => b.gemBereik - a.gemBereik);
-
-  // Haakje kruisanalyse — per haakje-type: gem bereik, saves, count
-  const haakjeStats = {};
-  allePostsGescoord.forEach(p => {
-    const ht = p.haakjeType || "Overig";
-    if (!haakjeStats[ht]) haakjeStats[ht] = { bereik:0, saves:0, comments:0, count:0 };
-    haakjeStats[ht].bereik   += p.bereik;
-    haakjeStats[ht].saves    += p.saves;
-    haakjeStats[ht].comments += p.comments;
-    haakjeStats[ht].count    += 1;
+  const contentTypeRanking=Object.entries(contentTypeStats).map(([ct,s])=>({
+    ct, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
+  })).sort((a,b)=>b.gemBereik-a.gemBereik);
+ 
+  const dagRanking=Object.entries(dagStats).map(([dag,s])=>({
+    dag:DAGEN_NL[+dag], gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
+  })).sort((a,b)=>b.gemBereik-a.gemBereik);
+ 
+  const wekenMetPosts=Object.values(weekStats);
+  const gemPostsPerWeek=wekenMetPosts.length?+(wekenMetPosts.reduce((a,b)=>a+b,0)/wekenMetPosts.length).toFixed(1):0;
+ 
+  const captionAdvies=Object.entries(captionStats).filter(([,v])=>v.n>0).map(([cat,v])=>({
+    cat, label:cat==="kort"?"Kort (<150 tekens)":cat==="middel"?"Middel (150-400)":"Lang (400+)",
+    gemBereik:Math.round(v.b/v.n), gemSaves:+(v.s/v.n).toFixed(1), count:v.n
+  })).sort((a,b)=>b.gemBereik-a.gemBereik);
+ 
+  const haakjeStats={};
+  allePostsGescoord.forEach(p=>{
+    const ht=p.haakjeType||"Overig";
+    if (!haakjeStats[ht]) haakjeStats[ht]={bereik:0,saves:0,count:0};
+    haakjeStats[ht].bereik+=p.bereik; haakjeStats[ht].saves+=p.saves; haakjeStats[ht].count+=1;
   });
-  const haakjeRanking = Object.entries(haakjeStats)
-    .filter(([, s]) => s.count >= 2)
-    .map(([ht, s]) => ({
-      ht,
-      gemBereik:   Math.round(s.bereik / s.count),
-      gemSaves:    +(s.saves / s.count).toFixed(1),
-      gemComments: +(s.comments / s.count).toFixed(1),
-      count: s.count,
-    }))
-    .sort((a, b) => b.gemBereik - a.gemBereik);
-
-  // CTA / ManyChat statistieken
-  const ctaStats = {
-    metCTA:      allePostsGescoord.filter(p => p.heeftCTA),
-    zonderCTA:   allePostsGescoord.filter(p => !p.heeftCTA),
-    metManyChat: allePostsGescoord.filter(p => p.heeftManyChat),
+  const haakjeRanking=Object.entries(haakjeStats).filter(([,s])=>s.count>=2).map(([ht,s])=>({
+    ht, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
+  })).sort((a,b)=>b.gemBereik-a.gemBereik);
+ 
+  const ctaMet=allePostsGescoord.filter(p=>p.heeftCTA);
+  const ctaZonder=allePostsGescoord.filter(p=>!p.heeftCTA);
+  const ctaVergelijking={
+    metCTA:ctaMet.length>0?{count:ctaMet.length,gemBereik:Math.round(ctaMet.reduce((a,p)=>a+p.bereik,0)/ctaMet.length),gemSaves:+(ctaMet.reduce((a,p)=>a+p.saves,0)/ctaMet.length).toFixed(1)}:null,
+    zonderCTA:ctaZonder.length>0?{count:ctaZonder.length,gemBereik:Math.round(ctaZonder.reduce((a,p)=>a+p.bereik,0)/ctaZonder.length),gemSaves:+(ctaZonder.reduce((a,p)=>a+p.saves,0)/ctaZonder.length).toFixed(1)}:null,
   };
-  const ctaVergelijking = {
-    metCTA:    ctaStats.metCTA.length > 0    ? { count: ctaStats.metCTA.length,    gemBereik: Math.round(ctaStats.metCTA.reduce((a,p)=>a+p.bereik,0)    / ctaStats.metCTA.length),    gemSaves: +(ctaStats.metCTA.reduce((a,p)=>a+p.saves,0)    / ctaStats.metCTA.length).toFixed(1)    } : null,
-    zonderCTA: ctaStats.zonderCTA.length > 0 ? { count: ctaStats.zonderCTA.length, gemBereik: Math.round(ctaStats.zonderCTA.reduce((a,p)=>a+p.bereik,0) / ctaStats.zonderCTA.length), gemSaves: +(ctaStats.zonderCTA.reduce((a,p)=>a+p.saves,0) / ctaStats.zonderCTA.length).toFixed(1) } : null,
-    metManyChat: ctaStats.metManyChat.length > 0 ? { count: ctaStats.metManyChat.length, gemBereik: Math.round(ctaStats.metManyChat.reduce((a,p)=>a+p.bereik,0) / ctaStats.metManyChat.length), gemSaves: +(ctaStats.metManyChat.reduce((a,p)=>a+p.saves,0) / ctaStats.metManyChat.length).toFixed(1) } : null,
-  };
-
-  const gemBereikTotaal = Math.round(totBereik / rows.length);
-  const gemSavesTotaal  = +(totSaves / rows.length).toFixed(1);
-
-  // ── VERBANDEN ANALYSE — waarom werkten de top posts? ──────────────────────
-  const verbanden = top10.slice(0, 5).map((post, i) => {
-    const inzichten = [];
-
-    // Haakje patroon
-    const tk = post.tekst.toLowerCase();
-    let haakje = "onbekend haakje";
-    if (/^ik\b/.test(tk)) haakje = "Ik-verhaal (jij als rolmodel)";
-    else if (/^(ze|hij|mijn klant|een klant|toen ze|toen hij)/.test(tk)) haakje = "Klantverhaal (bewijs vóór belofte)";
-    else if (/\b(stop met|iedereen|de markt|waarheid|illusie|verwed)\b/.test(tk)) haakje = "Confrontatie / stelling";
-    else if (/\bhoe (je|jij)|stap \d|\d (tips|manieren|stappen)/.test(tk)) haakje = "How-to / instructief";
-    else if (tk.trim().endsWith("?")) haakje = "Openingsvraag";
-    else if (/^(dit jaar|afgelopen|vorig jaar)/.test(tk)) haakje = "Resultaat-opener";
-
-    // Content type verklaring
-    const ctVerklaring = {
-      "Klantverhaal": "Klantverhalen bouwen vertrouwen — mensen zien zichzelf in de klant.",
-      "HOT Lead": "Directe actie-content scoort op bereik als de haak scherp is.",
-      "Visie": "Standpunt-content polariseert en trekt de juiste mensen aan.",
-      "Persoonlijk": "Persoonlijk maakt je menselijk — lage drempel om te reageren.",
-      "Rolmodel": "Eigen resultaten als bewijs werkt als je al autoriteit hebt.",
-      "Help": "Help-content wordt opgeslagen — hoge save-waarde.",
-      "Hub": "Hub-content scoort minder op bereik maar converteert warm publiek.",
-      "Overig": "Geen duidelijk patroon — kijk naar de haak zelf.",
-    };
-
-    // Performance profiel
-    const bereikRatio  = gemBereikTotaal > 0 ? Math.round((post.bereik / gemBereikTotaal) * 10) / 10 : 1;
-    const savesRatio   = gemSavesTotaal  > 0 ? Math.round((post.saves  / gemSavesTotaal)  * 10) / 10 : 1;
-
-    if (bereikRatio > 2)   inzichten.push(`${bereikRatio}× meer bereik dan jouw gemiddelde — deze haak trok nieuwe mensen aan.`);
-    if (savesRatio > 2)    inzichten.push(`${savesRatio}× meer saves dan gemiddeld — mensen bewaarden dit actief. Dit is expertise-content of iets dat ze willen onthouden.`);
-    if (post.comments > 5) inzichten.push(`${post.comments} reacties — dit raakte iets. Interactie op deze schaal betekent dat mensen zich herkenden of iets wilden zeggen.`);
-    if (bereikRatio > 1.5 && savesRatio > 1.5) inzichten.push("Dubbel sterk: bereik én saves. Dit is jouw sweetspot-format.");
-    if (bereikRatio < 1.2 && savesRatio > 2) inzichten.push("Laag bereik, hoog saves — dit scoorde niet viraal maar werd wél bewaard. Waardevol voor warm publiek.");
-
-    return {
-      rank: i + 1,
-      haakje,
-      contentType: post.contentType,
-      ctVerklaring: ctVerklaring[post.contentType] || "",
-      bereik: post.bereik,
-      saves: post.saves,
-      comments: post.comments,
-      bereikRatio,
-      savesRatio,
-      inzichten,
-      tekst: post.tekst,
-      type: post.type,
-    };
+ 
+  const verbanden=top10.slice(0,5).map((post,i)=>{
+    const inzichten=[];
+    const tk=post.tekst.toLowerCase();
+    let haakje="onbekend haakje";
+    if (/^ik\b/.test(tk)) haakje="Ik-verhaal (jij als rolmodel)";
+    else if (/^(ze|hij|mijn klant|een klant|toen ze|toen hij)/.test(tk)) haakje="Klantverhaal (bewijs vóór belofte)";
+    else if (/\b(stop met|iedereen|de markt|waarheid|illusie|verwed)\b/.test(tk)) haakje="Confrontatie / stelling";
+    else if (/^(dit jaar|afgelopen|vorig jaar)/.test(tk)) haakje="Resultaat-opener";
+    const bereikRatio=gemBereikTotaal>0?Math.round((post.bereik/gemBereikTotaal)*10)/10:1;
+    const savesRatio=gemSavesTotaal>0?Math.round((post.saves/gemSavesTotaal)*10)/10:1;
+    if (bereikRatio>2) inzichten.push(`${bereikRatio}× meer bereik dan jouw gemiddelde — deze haak trok nieuwe mensen aan.`);
+    if (savesRatio>2) inzichten.push(`${savesRatio}× meer saves dan gemiddeld — mensen bewaarden dit actief.`);
+    if (post.comments>5) inzichten.push(`${post.comments} reacties — dit raakte iets.`);
+    if (bereikRatio>1.5&&savesRatio>1.5) inzichten.push("Dubbel sterk: bereik én saves. Dit is jouw sweetspot-format.");
+    const ctVerk={"Klantverhaal":"Klantverhalen bouwen vertrouwen.","HOT Lead":"Directe actie-content scoort op bereik.","Visie":"Standpunt-content polariseert.","Persoonlijk":"Maakt je menselijk.","Rolmodel":"Eigen resultaten als bewijs.","Help":"Hoge save-waarde.","Hub":"Converteert warm publiek."};
+    return {rank:i+1,haakje,contentType:post.contentType,ctVerklaring:ctVerk[post.contentType]||"",bereik:post.bereik,saves:post.saves,comments:post.comments,bereikRatio,savesRatio,inzichten,tekst:post.tekst};
   });
-
-  const n = rows.length;
-  const typeRanking = Object.entries(typeStats)
-    .map(([type, s]) => ({ type, gemBereik: Math.round(s.bereik/s.count), gemSaves: +(s.saves/s.count).toFixed(1), gemComments: +(s.comments/s.count).toFixed(1), count: s.count }))
-    .sort((a, b) => b.gemBereik - a.gemBereik);
-
-  const besteBereik     = typeRanking[0];
-  const besteEngagement = [...typeRanking].sort((a,b) => (b.gemSaves+b.gemComments)-(a.gemSaves+a.gemComments))[0];
-
-  return {
-    aantalPosts: n,
-    gemBereik:   gemBereikTotaal,
-    gemSaves:    gemSavesTotaal,
-    gemComments: +(totComments / n).toFixed(1),
-    typeRanking, besteBereik, besteEngagement, topPost, top10,
-    dagRanking, uurRanking,
-    consistentie: { gemPerWeek: gemPostsPerWeek, max: maxPostsPerWeek, min: minPostsPerWeek, weken: weekStats },
-    captionAdvies,
-    haakjePatronen, dominantPatroon, patroonnamen,
-    contentTypeRanking,
-    verbanden,
-    haakjeRanking,
-    ctaVergelijking,
+ 
+  const voorbeeldenPerType={};
+  top10.forEach(p=>{
+    const ht=p.haakjeType||"Overig";
+    if (!voorbeeldenPerType[ht]) voorbeeldenPerType[ht]=[];
+    if (voorbeeldenPerType[ht].length<3) {
+      const eersteZin=p.tekst.replace(/\n/g," ").trim().split(/(?<=[.!?])\s/)[0].slice(0,80);
+      voorbeeldenPerType[ht].push({zin:eersteZin,bereik:p.bereik,saves:p.saves});
+    }
+  });
+ 
+  return {n,gemBereik:gemBereikTotaal,gemSaves:gemSavesTotaal,typeRanking,top10,contentTypeRanking,dagRanking,captionAdvies,haakjeRanking,ctaVergelijking,verbanden,voorbeeldenPerType,weekStats,gemPostsPerWeek,maxPostsPerWeek:Math.max(...wekenMetPosts),minPostsPerWeek:Math.min(...wekenMetPosts)};
+}
+ 
+function handleFile(e) {
+  const file=e.target.files[0];
+  if (!file) return;
+  document.getElementById('fout-msg').style.display='none';
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+    const data=analyseerCSV(ev.target.result);
+    if (!data||data.n<2) {
+      document.getElementById('fout-msg').style.display='block';
+      document.getElementById('fout-msg').textContent='Kon het bestand niet lezen. Controleer of je een Meta CSV hebt geüpload.';
+      return;
+    }
+    document.getElementById('bestand-naam').textContent='📄 '+file.name;
+    renderResultaat(data);
+    toonFase('resultaat');
   };
+  reader.readAsText(file,'utf-8');
 }
-
-// ── UI ────────────────────────────────────────────────────────────────────────
-function statChip(kleur) {
-  return {
-    background: kleur + "15",
-    border: `1px solid ${kleur}33`,
-    color: kleur,
-    borderRadius: 3, padding: "2px 7px",
-    fontSize: 11, fontFamily: "sans-serif", fontWeight: 600,
-  };
+ 
+function bar(kleur, breedte, tekst, licht) {
+  return `<div class="bar-track"><div class="bar-fill" style="width:${breedte}%;background:${kleur};"></div><div class="bar-val ${licht?'bar-val-light':''}">${tekst}</div></div>`;
 }
-
-function FunctieBadge({ functie }) {
-  const f = FUNCTIES[functie];
-  if (!f) return null;
-  return (
-    <span style={{
-      background: f.kleur + "18", border: `1px solid ${f.kleur}44`,
-      color: f.kleur, borderRadius: 3, padding: "2px 8px",
-      fontSize: 11, fontWeight: 700, fontFamily: "sans-serif",
-      letterSpacing: 0.5,
-    }}>{f.icon} {f.label}</span>
-  );
+ 
+function chip(tekst, kleur) {
+  return `<span class="chip" style="background:${kleur}18;border:1px solid ${kleur}44;color:${kleur};">${tekst}</span>`;
 }
-
-function StatCard({ label, waarde, sub, kleur = B.goud }) {
-  return (
-    <div style={{
-      background: B.wit, border: `1px solid ${B.cremeDark}`,
-      borderRadius: 6, padding: "16px 18px", flex: 1,
-      borderTop: `3px solid ${kleur}`,
-    }}>
-      <div style={{ color: B.sub, fontSize: 11, fontFamily: "sans-serif", letterSpacing: 1, marginBottom: 6, textTransform: "uppercase" }}>{label}</div>
-      <div style={{ color: B.tekst, fontSize: 28, fontWeight: 700, fontFamily: "sans-serif", lineHeight: 1 }}>{waarde}</div>
-      {sub && <div style={{ color: B.sub, fontSize: 12, fontFamily: "sans-serif", marginTop: 4 }}>{sub}</div>}
-    </div>
-  );
-}
-
-function HaakjeKruisanalyse({ haakjeRanking, voorbeeldenPerType, maxH, maxS, HAAKJE_KLEUREN, bereikTop, savesTop, B, statChip, FUNCTIES }) {
-  const [openType, setOpenType] = React.useState(null);
-  return (
-    <div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-        {haakjeRanking.map((h, i) => {
-          const kleur = HAAKJE_KLEUREN[h.ht] || B.goud;
-          const breedteBereik = Math.round((h.gemBereik / maxH) * 100);
-          const savesWidth    = Math.round((h.gemSaves / maxS) * 100);
-          const isOpen        = openType === h.ht;
-          const voorbeelden   = voorbeeldenPerType[h.ht] || [];
-          return (
-            <div key={h.ht} style={{ borderBottom: `1px solid ${B.cremeDark}44` }}>
-              {/* rij header — klikbaar */}
-              <div
-                onClick={() => setOpenType(isOpen ? null : h.ht)}
-                style={{ display: "flex", flexDirection: "column", gap: 3, padding: "11px 0 10px", cursor: "pointer" }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ background: kleur + "18", border: `1px solid ${kleur}44`, color: kleur, borderRadius: 3, padding: "2px 8px", fontSize: 11, fontFamily: "sans-serif", fontWeight: 700 }}>{h.ht}</span>
-                    <span style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>{h.count}× gepost</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ textAlign: "right" }}>
-                      <span style={{ color: i === 0 ? B.bordeaux : B.tekst, fontFamily: "sans-serif", fontSize: 13, fontWeight: 700 }}>{h.gemBereik.toLocaleString("nl-NL")}</span>
-                      <span style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}> bereik · {h.gemSaves} saves</span>
-                    </div>
-                    <span style={{ color: B.sub, fontSize: 14, fontFamily: "sans-serif", marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</span>
-                  </div>
-                </div>
-                {/* bereik balk */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 40, color: B.sub, fontSize: 10, fontFamily: "sans-serif" }}>bereik</div>
-                  <div style={{ flex: 1, background: B.cremeDark + "44", borderRadius: 2, height: 7, position: "relative", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${breedteBereik}%`, background: kleur, borderRadius: 2 }} />
-                  </div>
-                </div>
-                {/* saves balk */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 40, color: B.sub, fontSize: 10, fontFamily: "sans-serif" }}>saves</div>
-                  <div style={{ flex: 1, background: B.cremeDark + "44", borderRadius: 2, height: 7, position: "relative", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${savesWidth}%`, background: kleur, opacity: 0.45, borderRadius: 2 }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* uitvouw — voorbeeldhaakjes */}
-              {isOpen && (
-                <div style={{ background: kleur + "06", border: `1px solid ${kleur}22`, borderRadius: 4, padding: "12px 14px", marginBottom: 10 }}>
-                  {voorbeelden.length > 0 ? (
-                    <>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 10, letterSpacing: 1, fontWeight: 700, marginBottom: 10, textTransform: "uppercase" }}>
-                        Beste haakjes van dit type
-                      </div>
-                      {voorbeelden.map((v, vi) => (
-                        <div key={vi} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: vi < voorbeelden.length - 1 ? 10 : 0, paddingBottom: vi < voorbeelden.length - 1 ? 10 : 0, borderBottom: vi < voorbeelden.length - 1 ? `1px solid ${kleur}22` : "none" }}>
-                          <div style={{ minWidth: 20, height: 20, borderRadius: "50%", background: kleur, color: B.wit, fontSize: 10, fontWeight: 700, fontFamily: "sans-serif", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{vi + 1}</div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, fontStyle: "italic", lineHeight: 1.4, marginBottom: 4 }}>
-                              "{v.zin}{v.zin.length === 80 ? "..." : ""}"
-                            </div>
-                            <div style={{ display: "flex", gap: 8 }}>
-                              <span style={{ ...statChip(FUNCTIES.bereiken.kleur), fontSize: 10 }}>📡 {v.bereik.toLocaleString("nl-NL")}</span>
-                              <span style={{ ...statChip(FUNCTIES.activeren.kleur), fontSize: 10 }}>💾 {v.saves}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, fontStyle: "italic" }}>
-                      Geen top-10 voorbeelden beschikbaar voor dit haakje-type.
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+ 
+function renderResultaat(d) {
+  const el=document.getElementById('resultaat-inhoud');
+  let html='';
+ 
+  // 1. STATS
+  html+=`<div class="stat-cards">
+    <div class="stat-card" style="border-top:3px solid #650D17;"><div class="stat-label">Posts geanalyseerd</div><div class="stat-num">${d.n}</div><div class="stat-sub">afgelopen periode</div></div>
+    <div class="stat-card" style="border-top:3px solid #4a7c59;"><div class="stat-label">Gem. bereik</div><div class="stat-num">${d.gemBereik.toLocaleString('nl')}</div><div class="stat-sub">per post</div></div>
+    <div class="stat-card" style="border-top:3px solid #c47a2a;"><div class="stat-label">Gem. saves</div><div class="stat-num">${d.gemSaves}</div><div class="stat-sub">per post</div></div>
+  </div>`;
+ 
+  // 2. FORMATS
+  html+=`<div class="card"><div class="label">JOUW FORMATS — WAT DOET WELK</div>`;
+  d.typeRanking.forEach((t,i)=>{
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:${i<d.typeRanking.length-1?'1px solid #cfc5ae':'none'};">
+      <div><div style="font-weight:700;font-family:sans-serif;font-size:14px;color:#2e1f14;">${t.type} <span style="color:#7a6555;font-weight:400;font-size:11px;">(${t.count}×)</span></div></div>
+      <div style="text-align:right;font-family:sans-serif;"><div style="font-size:18px;font-weight:700;color:#2e1f14;">${t.gemBereik.toLocaleString('nl')}</div><div style="font-size:11px;color:#7a6555;">gem. bereik · ${t.gemSaves} saves</div></div>
+    </div>`;
+  });
+  html+=`</div>`;
+ 
+  // 3. TOP 10
+  html+=`<div class="card"><div class="label">🏅 TOP 10 BESTE POSTS</div><div class="sub">Saves tellen 3× mee, comments 2×, bereik 1×</div>`;
+  d.top10.forEach((p,i)=>{
+    const bg=i===0?'#650D17':i<3?'#9F926A':'#cfc5ae';
+    const fc=i<3?'#FAF7F2':'#7a6555';
+    html+=`<div class="post-item">
+      <div class="post-num" style="background:${bg};color:${fc};">${i+1}</div>
+      <div style="flex:1;">
+        <div class="post-tekst">"${p.tekst.replace(/\n/g,' ').slice(0,100)}${p.tekst.length>100?'...':''}"</div>
+        <div class="chips">
+          <span class="chip" style="background:#4a7c5918;border:1px solid #4a7c5944;color:#4a7c59;">📡 ${p.bereik} bereik</span>
+          <span class="chip" style="background:#c47a2a18;border:1px solid #c47a2a44;color:#c47a2a;">💾 ${p.saves} saves</span>
+          <span class="chip" style="background:#9F926A18;border:1px solid #9F926A44;color:#9F926A;">💬 ${p.comments}</span>
+          ${p.contentType&&p.contentType!=='Overig'?chip(p.contentType,'#9F926A'):''}
+        </div>
       </div>
-
-      {/* inzicht onderaan */}
-      {haakjeRanking.length >= 2 && (() => {
-        if (bereikTop.ht === savesTop.ht) return (
-          <div style={{ marginTop: 14, background: B.goud + "10", border: `1px solid ${B.goud}33`, borderRadius: 4, padding: "10px 14px", color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.6 }}>
-            ✦ <strong>{bereikTop.ht}</strong> wint op zowel bereik als saves. Dit is jouw dominante haakje.
-          </div>
-        );
-        return (
-          <div style={{ marginTop: 14, background: B.goud + "10", border: `1px solid ${B.goud}33`, borderRadius: 4, padding: "10px 14px" }}>
-            <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.7 }}>
-              ✦ <strong>{bereikTop.ht}</strong> scoort het meeste bereik — trekt nieuwe mensen aan.<br />
-              ✦ <strong>{savesTop.ht}</strong> scoort de meeste saves — wordt bewaard en onthouden.<br />
-              <span style={{ color: B.sub, fontSize: 12 }}>Twee functies. Bereik-haakjes voor groei, saves-haakjes voor autoriteit.</span>
-            </div>
-          </div>
-        );
-      })()}
-    </div>
-  );
-}
-
-export default function VisibilityAnalyse() {
-  const [fase, setFase] = React.useState("intro"); // intro | upload | resultaat
-  const [resultaat, setResultaat] = React.useState(null);
-  const [bestandNaam, setBestandNaam] = React.useState("");
-  const [fout, setFout] = React.useState("");
-
-  const handleFile = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setFout("");
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const inhoud = ev.target.result;
-      const data = analyseerCSV(inhoud);
-      if (!data || data.aantalPosts < 2) {
-        setFout("Kon het bestand niet lezen. Controleer of je een Meta CSV hebt geüpload.");
-        return;
-      }
-      setBestandNaam(file.name);
-      setResultaat(data);
-      setFase("resultaat");
-    };
-    reader.readAsText(file, "utf-8");
-  };
-
-  return (
-    <div style={{ minHeight: "100vh", background: B.creme, fontFamily: "'Georgia', serif" }}>
-
-      {/* header */}
-      <div style={{ background: B.bordeaux, padding: "18px 32px" }}>
-        <div style={{ color: B.creme + "88", fontSize: 9, letterSpacing: 3, fontFamily: "sans-serif" }}>THE INDUSTRY PLAYGROUND</div>
-        <div style={{ color: B.creme, fontSize: 20, fontWeight: 700, marginTop: 2 }}>Visibility Scan</div>
-        <div style={{ color: B.goudLight, fontSize: 12, fontFamily: "sans-serif", marginTop: 2 }}>Les 1 · Jouw content onder de loep</div>
+    </div>`;
+  });
+  html+=`</div>`;
+ 
+  // 4. CONTENT TYPE SPLIT
+  const opVolume=[...d.contentTypeRanking].sort((a,b)=>b.count-a.count);
+  const opPerf=[...d.contentTypeRanking].sort((a,b)=>b.gemBereik-a.gemBereik);
+  const maxCount=opVolume[0]?.count||1;
+  const maxBereikCT=opPerf[0]?.gemBereik||1;
+  const kans=opPerf.find(p=>{const vr=opVolume.findIndex(v=>v.ct===p.ct);return vr>2&&p.gemBereik>d.gemBereik;});
+  html+=`<div style="margin-bottom:20px;">`;
+  if (kans) html+=`<div class="strategisch"><div style="color:#650D17;font-family:sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;">✦ Strategische kans</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.6;"><strong>${kans.ct}</strong> scoort ${kans.gemBereik} bereik — boven jouw gemiddelde — maar je post het maar ${kans.count}×. Meer van dit type is de snelste groeihefboom.</div></div>`;
+  html+=`<div class="grid2">
+    <div class="card" style="margin-bottom:0;"><div class="label" style="margin-bottom:2px;">📂 WAT POST JE?</div><div style="color:#7a6555;font-family:sans-serif;font-size:11px;margin-bottom:14px;">Aantal posts per type</div>`;
+  opVolume.forEach((ct,i)=>{
+    const kleur=TYPE_KLEUREN[ct.ct]||'#9F926A';
+    const breedte=Math.round((ct.count/maxCount)*100);
+    html+=`<div class="bar-row"><div class="bar-label" style="width:72px;font-size:11px;color:${i===0?'#2e1f14':'#7a6555'};font-weight:${i===0?700:400};">${ct.ct}</div>${bar(kleur,breedte,ct.count+'×',i===0)}</div>`;
+  });
+  html+=`</div><div class="card" style="margin-bottom:0;"><div class="label" style="margin-bottom:2px;">📡 WAT WERKT?</div><div style="color:#7a6555;font-family:sans-serif;font-size:11px;margin-bottom:14px;">Gem. bereik per type</div>`;
+  opPerf.forEach((ct,i)=>{
+    const kleur=TYPE_KLEUREN[ct.ct]||'#9F926A';
+    const breedte=Math.round((ct.gemBereik/maxBereikCT)*100);
+    const betr=ct.count>=5;
+    html+=`<div class="bar-row"><div class="bar-label" style="width:72px;font-size:11px;color:${i===0?'#2e1f14':'#7a6555'};font-weight:${i===0?700:400};">${ct.ct}</div>${bar(kleur,breedte,ct.gemBereik+(betr?'':'⚠️'),i===0)}</div>`;
+  });
+  html+=`<div style="margin-top:10px;color:#7a6555;font-family:sans-serif;font-size:10px;font-style:italic;">⚠️ = minder dan 5 posts</div></div></div>
+  <div style="margin-top:10px;color:#7a6555;font-family:sans-serif;font-size:11px;font-style:italic;">💡 In Les 2 koppel je elk type aan een doel en een vaste plek in je weekritme.</div></div>`;
+ 
+  // 5. INZICHTEN
+  html+=`<div class="card" style="background:rgba(159,146,106,0.1);border-color:rgba(159,146,106,0.3);">
+    <div class="label">✦ INZICHTEN</div>
+    <div style="display:flex;gap:12px;margin-bottom:14px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">${d.typeRanking[0]?.type||''} bereikt de meeste mensen. Bereik ≠ omzet — klantverhalen bouwen autoriteit, HOT leads converteren warm publiek.</div></div>
+    <div style="display:flex;gap:12px;margin-bottom:14px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">${d.gemSaves<1?`Saves zijn laag (${d.gemSaves} gem.) — maak meer concrete, opslagwaardige content.`:`Saves liggen op ${d.gemSaves} gemiddeld — zet hier ManyChat op.`}</div></div>
+    <div style="display:flex;gap:12px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">Verkopen is niet zichtbaar in deze data — dat zit in je DMs en ManyChat.</div></div>
+  </div>`;
+ 
+  // 6. TOP 5 HAAKJE-PATROON
+  html+=`<div class="card"><div class="label">🎯 JOUW HAAKJE-PATROON</div><div class="sub">De eerste zin van je top 5 posts</div>`;
+  d.top10.slice(0,5).forEach((p,i)=>{
+    const eersteZin=p.tekst.replace(/\n/g,' ').trim().split(/(?<=[.!?])\s/)[0].slice(0,90);
+    const bg=i===0?'#650D17':'rgba(159,146,106,0.2)';
+    const fc=i===0?'#FAF7F2':'#9F926A';
+    html+=`<div class="top5-item">
+      <div class="top5-num" style="background:${bg};color:${fc};">${i+1}</div>
+      <div class="top5-content" style="border-left:3px solid ${i===0?'#650D17':'rgba(159,146,106,0.4)'};">
+        <div style="color:#2e1f14;font-family:sans-serif;font-size:${i===0?15:13}px;font-weight:${i===0?700:400};font-style:italic;line-height:1.4;margin-bottom:4px;">"${eersteZin}${eersteZin.length===90?'...':''}"</div>
+        <div class="chips">
+          <span class="chip" style="background:#4a7c5918;border:1px solid #4a7c5944;color:#4a7c59;font-size:10px;">📡 ${p.bereik}</span>
+          <span class="chip" style="background:#c47a2a18;border:1px solid #c47a2a44;color:#c47a2a;font-size:10px;">💾 ${p.saves}</span>
+          <span class="chip" style="background:#9F926A18;border:1px solid #9F926A44;color:#9F926A;font-size:10px;">💬 ${p.comments}</span>
+          ${p.contentType&&p.contentType!=='Overig'?chip(p.contentType,'#9F926A'):''}
+        </div>
       </div>
-
-      <div style={{ maxWidth: 700, margin: "0 auto", padding: "32px 24px" }}>
-
-        {/* ── INTRO ── */}
-        {fase === "intro" && (
-          <div>
-            <h2 style={{ color: B.tekst, fontSize: 26, marginBottom: 8, lineHeight: 1.2 }}>
-              Wat doet jouw content<br />eigenlijk?
-            </h2>
-            <p style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 15, lineHeight: 1.7, marginBottom: 32 }}>
-              Niet wat jij denkt dat het doet, maar wat de data zegt. Upload je Meta export en ontdek in 30 seconden welke posts werken, welke niet, en waarom.
-            </p>
-
-            {/* de 4 functies */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 14 }}>
-                ELKE POST HEEFT EEN FUNCTIE
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                {Object.entries(FUNCTIES).map(([key, f]) => (
-                  <div key={key} style={{
-                    background: B.wit, border: `1px solid ${B.cremeDark}`,
-                    borderLeft: `4px solid ${f.kleur}`,
-                    borderRadius: 4, padding: "12px 14px",
-                  }}>
-                    <div style={{ fontSize: 20, marginBottom: 4 }}>{f.icon}</div>
-                    <div style={{ color: B.tekst, fontWeight: 700, fontFamily: "sans-serif", fontSize: 14 }}>{f.label}</div>
-                    <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginTop: 3 }}>
-                      {key === "bereiken"  && "Nieuwe mensen zien je"}
-                      {key === "verbinden" && "Mensen vertrouwen je"}
-                      {key === "activeren" && "Mensen bewegen — DM, comment, klik (en kopen soms direct via DM)"}
-                      {key === "verkopen"  && "Niet meetbaar in Meta data — zit in DMs en ManyChat"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* instructie exporteren */}
-            <div style={{
-              background: B.wit, border: `1px solid ${B.cremeDark}`,
-              borderRadius: 6, padding: "20px 22px", marginBottom: 28,
-            }}>
-              <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 14 }}>
-                ZO EXPORTEER JE JE META DATA
-              </div>
-              {[
-                { n: "1", t: "Ga naar Meta Business Suite → business.facebook.com" },
-                { n: "2", t: "Klik links op Inzichten → dan op Content" },
-                { n: "3", t: "⚠️ Selecteer bovenaan Instagram (staat standaard op Facebook — anders is je export leeg)" },
-                { n: "4", t: "Selecteer rechtsboven: Afgelopen 3 maanden (of langer)" },
-                { n: "5", t: "Klik op het export-icoontje rechtsboven → kies CSV downloaden" },
-                { n: "6", t: "Upload het bestand hieronder" },
-              ].map(({ n, t }) => (
-                <div key={n} style={{ display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start" }}>
-                  <div style={{
-                    minWidth: 22, height: 22, borderRadius: "50%",
-                    background: B.bordeaux, color: B.creme,
-                    fontSize: 11, fontWeight: 700, fontFamily: "sans-serif",
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>{n}</div>
-                  <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.5, paddingTop: 3 }}>{t}</div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setFase("upload")}
-              style={{
-                width: "100%", padding: "16px", background: B.bordeaux,
-                color: B.creme, border: "none", borderRadius: 4,
-                fontSize: 15, fontWeight: 700, fontFamily: "sans-serif",
-                cursor: "pointer", letterSpacing: 0.5,
-              }}>
-              Ik heb mijn CSV klaar — upload →
-            </button>
-          </div>
-        )}
-
-        {/* ── UPLOAD ── */}
-        {fase === "upload" && (
-          <div>
-            <h2 style={{ color: B.tekst, fontSize: 24, marginBottom: 8 }}>Upload je Meta CSV</h2>
-            <p style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 14, marginBottom: 28 }}>
-              Je data verlaat je browser niet — alles wordt lokaal verwerkt.
-            </p>
-
-            <div
-              onClick={() => document.getElementById("csv-input").click()}
-              style={{
-                border: `2px dashed ${B.goud}88`, borderRadius: 8,
-                padding: "52px 24px", textAlign: "center", cursor: "pointer",
-                background: B.wit, marginBottom: 16, transition: "background .2s",
-              }}>
-              <div style={{ fontSize: 44, marginBottom: 12 }}>📊</div>
-              <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>
-                Klik om je CSV te uploaden
-              </div>
-              <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 13 }}>
-                .csv bestand van Meta Business Suite
-              </div>
-              <input id="csv-input" type="file" accept=".csv,.txt" style={{ display: "none" }} onChange={handleFile} />
-            </div>
-
-            {fout && (
-              <div style={{ background: "#fde8e8", border: "1px solid #e57373", borderRadius: 4, padding: "12px 16px", marginBottom: 16, color: "#c62828", fontFamily: "sans-serif", fontSize: 13 }}>
-                {fout}
-              </div>
-            )}
-
-            <div style={{ textAlign: "center" }}>
-              <span style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12 }}>Geen CSV? </span>
-              <span onClick={() => setFase("intro")} style={{ color: B.goud, fontFamily: "sans-serif", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
-                ← Terug naar instructie
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* ── RESULTAAT ── */}
-        {fase === "resultaat" && resultaat && (
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-              <div>
-                <h2 style={{ color: B.tekst, fontSize: 24, marginBottom: 4 }}>Jouw content analyse</h2>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12 }}>📄 {bestandNaam}</div>
-              </div>
-              <button onClick={() => { setFase("upload"); setResultaat(null); }} style={{
-                background: "transparent", border: `1px solid ${B.cremeDark}`,
-                borderRadius: 3, padding: "6px 14px", cursor: "pointer",
-                color: B.sub, fontFamily: "sans-serif", fontSize: 12,
-              }}>Nieuw bestand</button>
-            </div>
-
-            {/* ── 1. STATS ── */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
-              <StatCard label="Posts geanalyseerd" waarde={resultaat.aantalPosts} sub="afgelopen periode" kleur={B.bordeaux} />
-              <StatCard label="Gem. bereikte accounts" waarde={resultaat.gemBereik.toLocaleString("nl")} sub="per post" kleur={FUNCTIES.bereiken.kleur} />
-              <StatCard label="Gem. saves" waarde={resultaat.gemSaves} sub="per post" kleur={FUNCTIES.activeren.kleur} />
-            </div>
-
-            {/* ── 2. FORMATS ── */}
-            <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-              <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 16 }}>JOUW FORMATS — WAT DOET WELK</div>
-              {resultaat.typeRanking.map((t, i) => {
-                const functieMap = TYPE_FUNCTIE[t.type] || { primair: "verbinden", secundair: "bereiken" };
-                return (
-                  <div key={t.type} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: i < resultaat.typeRanking.length - 1 ? `1px solid ${B.cremeDark}` : "none" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <span style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 14, fontWeight: 700 }}>{t.type}</span>
-                        <span style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>({t.count}×)</span>
-                      </div>
-                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        <FunctieBadge functie={functieMap.primair} />
-                        <FunctieBadge functie={functieMap.secundair} />
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "right", fontFamily: "sans-serif" }}>
-                      <div style={{ color: B.tekst, fontSize: 18, fontWeight: 700 }}>{t.gemBereik.toLocaleString("nl")}</div>
-                      <div style={{ color: B.sub, fontSize: 11 }}>gem. bereik</div>
-                      <div style={{ color: B.sub, fontSize: 11 }}>{t.gemSaves} saves · {t.gemComments} reacties</div>
-                    </div>
-                  </div>
-                );
-              })}
-              {resultaat.besteBereik.type !== resultaat.besteEngagement.type && (
-                <div style={{ marginTop: 16, background: B.goud + "12", border: `1px solid ${B.goud}33`, borderRadius: 4, padding: "10px 14px", color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.6 }}>
-                  ✦ <strong>{resultaat.besteBereik.type}</strong> bereikt de meeste mensen. <strong>{resultaat.besteEngagement.type}</strong> zorgt voor de meeste verbinding en saves. Gebruik ze bewust voor beide doelen.
-                </div>
-              )}
-            </div>
-
-            {/* ── 3. TOP 10 POSTS ── */}
-            {resultaat.top10?.length > 0 && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>🏅 TOP 10 BESTE POSTS</div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>Gesorteerd op totaalscore — saves tellen 3× mee, comments 2×, bereik 1×</div>
-                {resultaat.top10.map((p, i) => (
-                  <div key={i} style={{ padding: "12px 0", borderBottom: i < resultaat.top10.length - 1 ? `1px solid ${B.cremeDark}` : "none", display: "flex", gap: 14, alignItems: "flex-start" }}>
-                    <div style={{ minWidth: 26, height: 26, borderRadius: "50%", background: i === 0 ? B.bordeaux : i < 3 ? B.goud : B.cremeDark, color: i < 3 ? B.wit : B.sub, fontSize: 11, fontWeight: 700, fontFamily: "sans-serif", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, fontStyle: "italic", lineHeight: 1.5, marginBottom: 8 }}>
-                        "{p.tekst.replace(/\n/g, " ").slice(0, 100)}{p.tekst.length > 100 ? "..." : ""}"
-                      </div>
-                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                        <span style={{ ...statChip(FUNCTIES.bereiken.kleur) }}>📡 {p.bereik} bereik</span>
-                        <span style={{ ...statChip(FUNCTIES.activeren.kleur) }}>💾 {p.saves} saves</span>
-                        <span style={{ ...statChip(FUNCTIES.verbinden.kleur) }}>💬 {p.comments} comments</span>
-                        {p.contentType && p.contentType !== "Overig" && (
-                          <span style={{ ...statChip(B.goud), fontSize: 10 }}>{p.contentType}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ── 4. CONTENT TYPE SPLIT ── */}
-            {resultaat.contentTypeRanking?.length > 0 && (() => {
-              const TYPE_KLEUREN = { "Visie": B.bordeaux, "Klantverhaal": "#4a7c59", "Klantverhaal + CTA": "#2d6644", "HOT Lead": "#c47a2a", "Help": B.goud, "Rolmodel": "#7a5c9e", "Persoonlijk": "#9e5c7a", "Hub": "#5c7a9e", "Overig": B.cremeDark };
-              const opVolume     = [...resultaat.contentTypeRanking].sort((a, b) => b.count - a.count);
-              const opPerformance = [...resultaat.contentTypeRanking].sort((a, b) => b.gemBereik - a.gemBereik);
-              const maxCount     = opVolume[0]?.count || 1;
-              const maxBereik    = opPerformance[0]?.gemBereik || 1;
-              const kans = opPerformance.find(p => {
-                const volRank = opVolume.findIndex(v => v.ct === p.ct);
-                return volRank > 2 && p.gemBereik > resultaat.gemBereik;
-              });
-              return (
-                <div style={{ marginBottom: 20 }}>
-                  {kans && (
-                    <div style={{ background: B.bordeaux + "08", border: `1px solid ${B.bordeaux}33`, borderRadius: 6, padding: "14px 18px", marginBottom: 12 }}>
-                      <div style={{ color: B.bordeaux, fontFamily: "sans-serif", fontSize: 13, fontWeight: 700, marginBottom: 4 }}>✦ Strategische kans</div>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.6 }}>
-                        <strong>{kans.ct}</strong> scoort {kans.gemBereik} bereik gemiddeld — boven jouw gemiddelde — maar je post het maar {kans.count}×. Meer van dit type maken is de snelste manier om je bereik te verhogen zonder dat je meer hoeft te posten.
-                      </div>
-                    </div>
-                  )}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "16px 18px" }}>
-                      <div style={{ color: B.goud, fontSize: 9, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 2 }}>📂 WAT POST JE?</div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11, marginBottom: 14 }}>Aantal posts per type</div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                        {opVolume.map((ct, i) => {
-                          const breedte = Math.round((ct.count / maxCount) * 100);
-                          const kleur = TYPE_KLEUREN[ct.ct] || B.goud;
-                          return (
-                            <div key={ct.ct} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ width: 72, color: i === 0 ? B.tekst : B.sub, fontFamily: "sans-serif", fontSize: 11, fontWeight: i === 0 ? 700 : 400, flexShrink: 0 }}>{ct.ct}</div>
-                              <div style={{ flex: 1, background: B.cremeDark + "44", borderRadius: 3, height: 20, position: "relative", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${breedte}%`, background: kleur, opacity: i === 0 ? 1 : 0.6, borderRadius: 3 }} />
-                                <div style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", color: i === 0 ? B.wit : B.sub, fontSize: 10, fontFamily: "sans-serif", fontWeight: 600 }}>{ct.count}×</div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "16px 18px" }}>
-                      <div style={{ color: B.goud, fontSize: 9, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 2 }}>📡 WAT WERKT?</div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11, marginBottom: 14 }}>Gem. bereik per type</div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                        {opPerformance.map((ct, i) => {
-                          const breedte = Math.round((ct.gemBereik / maxBereik) * 100);
-                          const kleur = TYPE_KLEUREN[ct.ct] || B.goud;
-                          const betrouwbaar = ct.count >= 5;
-                          return (
-                            <div key={ct.ct} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ width: 72, color: i === 0 ? B.tekst : B.sub, fontFamily: "sans-serif", fontSize: 11, fontWeight: i === 0 ? 700 : 400, flexShrink: 0 }}>{ct.ct}</div>
-                              <div style={{ flex: 1, background: B.cremeDark + "44", borderRadius: 3, height: 20, position: "relative", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${breedte}%`, background: kleur, opacity: betrouwbaar ? 1 : 0.4, borderRadius: 3 }} />
-                                <div style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", color: i === 0 ? B.wit : B.sub, fontSize: 10, fontFamily: "sans-serif", fontWeight: 600 }}>{ct.gemBereik}{!betrouwbaar ? " ⚠️" : ""}</div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div style={{ marginTop: 10, color: B.sub, fontFamily: "sans-serif", fontSize: 10, fontStyle: "italic" }}>⚠️ = minder dan 5 posts — cijfer nog niet betrouwbaar</div>
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 10, color: B.sub, fontFamily: "sans-serif", fontSize: 11, fontStyle: "italic", paddingLeft: 2 }}>
-                    💡 In Les 2 koppel je elk type aan een doel en een vaste plek in je weekritme.
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* ── 5. INZICHTEN ── */}
-            <div style={{ background: B.goud + "12", border: `1px solid ${B.goud}44`, borderRadius: 6, padding: "20px 22px", marginBottom: 24 }}>
-              <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 16 }}>✦ INZICHTEN</div>
-              {[
-                resultaat.besteBereik.type !== resultaat.besteEngagement.type
-                  ? `${resultaat.besteBereik.type} bereikt de meeste mensen. ${resultaat.besteEngagement.type} zorgt voor de meeste verbinding en saves. Ze doen andere dingen — gebruik ze bewust voor beide.`
-                  : `${resultaat.besteBereik.type} doet het sterkst op alle fronten. Dit is jouw anker-format.`,
-                resultaat.gemSaves < 1
-                  ? `Saves zijn laag (${resultaat.gemSaves} gem.) — mensen bekijken maar bewaren niet. Maak je content die iemand wil bewaren of doorsturen? Visie-posts raken maar worden niet opgeslagen. Concrete help-content en lijsten wel.`
-                  : `Saves liggen op ${resultaat.gemSaves} gemiddeld — er is intentie. Zet hier ManyChat op: "Comment X" zodat die intentie ook een lead wordt.`,
-                `Let op: verkopen is niet zichtbaar in deze data. Dat zit in je DMs en ManyChat. De analyse laat zien hoe je publiek groeit en beweegt — of het ook koopt zie je alleen als je je DMs bijhoudt.`,
-              ].map((inzicht, i) => (
-                <div key={i} style={{ display: "flex", gap: 12, marginBottom: i < 2 ? 14 : 0 }}>
-                  <div style={{ color: B.goud, fontSize: 16, flexShrink: 0, marginTop: 1 }}>→</div>
-                  <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 14, lineHeight: 1.7 }}>{inzicht}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── 6. TOP 5 HAAKJE-PATROON ── */}
-            {resultaat.top10?.length >= 3 && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>
-                  🎯 JOUW HAAKJE-PATROON
-                </div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>
-                  De eerste zin van je top 5 posts — en wat ze gemeen hebben
-                </div>
-                {resultaat.dominantPatroon && resultaat.dominantPatroon[1] >= 2 && (
-                  <div style={{ background: B.bordeaux + "0c", border: `1px solid ${B.bordeaux}44`, borderRadius: 4, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 18, flexShrink: 0 }}>✦</span>
-                    <div>
-                      <div style={{ color: B.bordeaux, fontFamily: "sans-serif", fontSize: 14, fontWeight: 700, marginBottom: 3 }}>
-                        {resultaat.dominantPatroon[1]} van je top 5 posts beginnen met een {resultaat.patroonnamen[resultaat.dominantPatroon[0]]}.
-                      </div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 13 }}>
-                        Dat is jouw werkende formule. Hoe vaker je dat herhaalt, hoe voorspelbaarder je resultaat.
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {resultaat.top10.slice(0, 5).map((p, i) => {
-                    const eersteZin = p.tekst.replace(/\n/g, " ").trim().split(/(?<=[.!?])\s/)[0].slice(0, 90);
-                    return (
-                      <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                        <div style={{ minWidth: 26, height: 26, borderRadius: "50%", background: i === 0 ? B.bordeaux : B.goud + "33", color: i === 0 ? B.creme : B.goud, fontSize: 11, fontWeight: 700, fontFamily: "sans-serif", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>{i + 1}</div>
-                        <div style={{ flex: 1, borderLeft: `3px solid ${i === 0 ? B.bordeaux : B.goud + "44"}`, paddingLeft: 14 }}>
-                          <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: i === 0 ? 15 : 13, fontWeight: i === 0 ? 700 : 400, fontStyle: "italic", lineHeight: 1.4, marginBottom: 4 }}>
-                            "{eersteZin}{eersteZin.length === 90 ? "..." : ""}"
-                          </div>
-                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                            <span style={statChip(FUNCTIES.bereiken.kleur)}>📡 {p.bereik}</span>
-                            <span style={statChip(FUNCTIES.activeren.kleur)}>💾 {p.saves}</span>
-                            <span style={statChip(FUNCTIES.verbinden.kleur)}>💬 {p.comments}</span>
-                            {p.contentType && p.contentType !== "Overig" && (
-                              <span style={{ ...statChip(B.goud), fontSize: 10 }}>{p.contentType}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* ── 7. VERBANDEN — WAAROM WERKTEN JOUW TOP POSTS? ── */}
-            {resultaat.verbanden?.length > 0 && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>🔗 WAAROM WERKTEN JOUW TOP POSTS?</div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 20 }}>De verbanden tussen haakje, content-type en resultaat.</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {resultaat.verbanden.map((v) => (
-                    <div key={v.rank} style={{ border: `1px solid ${B.cremeDark}`, borderLeft: `4px solid ${v.rank === 1 ? B.bordeaux : v.rank <= 3 ? B.goud : B.cremeDark}`, borderRadius: 4, padding: "14px 16px", background: v.rank === 1 ? B.bordeaux + "06" : B.wit }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-                        <div style={{ background: v.rank === 1 ? B.bordeaux : B.goud, color: B.creme, borderRadius: 3, fontSize: 10, fontWeight: 700, fontFamily: "sans-serif", padding: "2px 8px", letterSpacing: 1 }}>#{v.rank}</div>
-                        <span style={{ background: B.creme, border: `1px solid ${B.cremeDark}`, borderRadius: 3, padding: "2px 8px", fontSize: 11, fontFamily: "sans-serif", color: B.sub }}>{v.haakje}</span>
-                        <span style={{ background: B.goud + "18", border: `1px solid ${B.goud}44`, borderRadius: 3, padding: "2px 8px", fontSize: 11, fontFamily: "sans-serif", color: B.goud, fontWeight: 700 }}>{v.contentType}</span>
-                      </div>
-                      {v.tekst && (
-                        <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.5, marginBottom: 10, fontStyle: "italic", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                          "{v.tekst.slice(0, 160)}{v.tekst.length > 160 ? "…" : ""}"
-                        </div>
-                      )}
-                      <div style={{ display: "flex", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
-                        {[
-                          { l: "Bereik", val: v.bereik, ratio: v.bereikRatio, kleur: v.bereikRatio >= 2 ? B.bordeaux : v.bereikRatio >= 1.5 ? B.goud : B.sub },
-                          { l: "Saves", val: v.saves, ratio: v.savesRatio, kleur: v.savesRatio >= 2 ? B.bordeaux : v.savesRatio >= 1.5 ? B.goud : B.sub },
-                          { l: "Reacties", val: v.comments, ratio: null, kleur: B.sub },
-                        ].map(s => (
-                          <div key={s.l} style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ color: s.kleur, fontSize: 16, fontWeight: 700, fontFamily: "sans-serif" }}>
-                              {s.val.toLocaleString("nl-NL")}{s.ratio && s.ratio >= 1.5 ? <span style={{ fontSize: 10, marginLeft: 4 }}>{s.ratio}×</span> : null}
-                            </span>
-                            <span style={{ color: B.sub, fontSize: 10, fontFamily: "sans-serif" }}>{s.l}</span>
-                          </div>
-                        ))}
-                      </div>
-                      {v.inzichten.length > 0 && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          {v.inzichten.map((ins, ii) => (
-                            <div key={ii} style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 12, lineHeight: 1.5, display: "flex", gap: 6 }}>
-                              <span style={{ color: B.goud, flexShrink: 0 }}>✦</span><span>{ins}</span>
-                            </div>
-                          ))}
-                          <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11, marginTop: 4, fontStyle: "italic" }}>{v.ctVerklaring}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── 8. HAAKJE KRUISANALYSE MET UITVOUW ── */}
-            {resultaat.haakjeRanking?.length > 0 && (() => {
-              const HAAKJE_KLEUREN = { "Klantverhaal": "#4a7c59", "Confrontatie": B.bordeaux, "Stellingname": "#c47a2a", "Resultaat-opener": "#7a5c9e", "Ik-verhaal": B.goud, "Persoonlijk ik-verhaal": "#9e5c7a", "Vraag": "#5c7a9e", "Emoji-opener": "#c4a020", "Getal/resultaat": "#3a6c8a", "Overig": B.cremeDark };
-              const maxH = resultaat.haakjeRanking[0].gemBereik || 1;
-              const maxS = Math.max(...resultaat.haakjeRanking.map(x => x.gemSaves)) || 1;
-              const bereikTop = resultaat.haakjeRanking[0];
-              const savesTop  = [...resultaat.haakjeRanking].sort((a,b) => b.gemSaves - a.gemSaves)[0];
-              const voorbeeldenPerType = {};
-              resultaat.top10.forEach(p => {
-                const ht = p.haakjeType || "Overig";
-                if (!voorbeeldenPerType[ht]) voorbeeldenPerType[ht] = [];
-                if (voorbeeldenPerType[ht].length < 3) {
-                  const eersteZin = p.tekst.replace(/\n/g, " ").trim().split(/(?<=[.!?])\s/)[0].slice(0, 80);
-                  voorbeeldenPerType[ht].push({ zin: eersteZin, bereik: p.bereik, saves: p.saves });
-                }
-              });
-              return (
-                <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                  <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>🎣 WELK HAAKJE WERKT HET BEST?</div>
-                  <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>Hoe je je eerste zin begint — en wat dat oplevert. Klik op een type om voorbeelden te zien.</div>
-                  <HaakjeKruisanalyse haakjeRanking={resultaat.haakjeRanking} voorbeeldenPerType={voorbeeldenPerType} maxH={maxH} maxS={maxS} HAAKJE_KLEUREN={HAAKJE_KLEUREN} bereikTop={bereikTop} savesTop={savesTop} B={B} statChip={statChip} FUNCTIES={FUNCTIES} />
-                </div>
-              );
-            })()}
-
-            {/* ── 9. CTA VERGELIJKING ── */}
-            {resultaat.ctaVergelijking?.metCTA && resultaat.ctaVergelijking?.zonderCTA && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>⚡ POSTS MÉT VS ZONDER CTA</div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>Doet een CTA (comment, DM, link) iets met je bereik en saves?</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-                  {[
-                    { label: "Mét CTA", data: resultaat.ctaVergelijking.metCTA, kleur: B.bordeaux },
-                    { label: "Zonder CTA", data: resultaat.ctaVergelijking.zonderCTA, kleur: B.goud },
-                  ].map(({ label, data, kleur }) => (
-                    <div key={label} style={{ background: kleur + "08", border: `1px solid ${kleur}33`, borderRadius: 4, padding: "12px 14px" }}>
-                      <div style={{ color: kleur, fontFamily: "sans-serif", fontSize: 11, fontWeight: 700, marginBottom: 8 }}>{label}</div>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 22, fontWeight: 700 }}>{data.gemBereik.toLocaleString("nl-NL")}</div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>gem. bereik</div>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 16, fontWeight: 700, marginTop: 6 }}>{data.gemSaves}</div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>gem. saves · {data.count} posts</div>
-                    </div>
-                  ))}
-                </div>
-                {(() => {
-                  const { metCTA, zonderCTA, metManyChat } = resultaat.ctaVergelijking;
-                  const bereikVerschil = metCTA.gemBereik - zonderCTA.gemBereik;
-                  const savesVerschil  = metCTA.gemSaves  - zonderCTA.gemSaves;
-                  const pct = zonderCTA.gemBereik > 0 ? Math.round((bereikVerschil / zonderCTA.gemBereik) * 100) : 0;
-                  return (
-                    <div style={{ background: B.goud + "10", border: `1px solid ${B.goud}33`, borderRadius: 4, padding: "10px 14px" }}>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.7 }}>
-                        {Math.abs(pct) < 10
-                          ? `Posts mét en zonder CTA presteren vergelijkbaar op bereik (verschil < 10%). Een CTA dempt je bereik dus niet — je kunt gerust vaker een actie vragen.`
-                          : bereikVerschil > 0
-                            ? `Posts mét CTA halen ${pct}% meer bereik dan posts zonder. Jouw publiek reageert op actie-uitnodigingen.`
-                            : `Posts zonder CTA halen ${Math.abs(pct)}% meer bereik. Gebruik CTA-posts bewust voor conversie, niet voor bereik.`
-                        }
-                        {savesVerschil > 0.5 && <span> Posts mét CTA worden ook vaker opgeslagen ({metCTA.gemSaves} vs {zonderCTA.gemSaves} saves gem.).</span>}
-                        {metManyChat && metManyChat.count > 0 && (
-                          <span style={{ display: "block", marginTop: 6, color: B.sub, fontSize: 12 }}>🤖 ManyChat-achtige posts herkend: {metManyChat.count}× — gem. {metManyChat.gemBereik} bereik.</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* ── 10. CAPTION LENGTE ── */}
-            {resultaat.captionAdvies?.length > 0 && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>✍️ CAPTION LENGTE</div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>Wat werkt beter — kort of lang?</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {resultaat.captionAdvies.map((c, i) => (
-                    <div key={c.cat} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 4, background: i === 0 ? B.goud + "12" : B.creme, border: `1px solid ${i === 0 ? B.goud : B.cremeDark}` }}>
-                      <div>
-                        <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, fontWeight: i === 0 ? 700 : 400 }}>{c.label}</div>
-                        <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11, marginTop: 2 }}>{c.count} posts</div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ color: i === 0 ? B.bordeaux : B.tekst, fontFamily: "sans-serif", fontSize: 16, fontWeight: 700 }}>{c.gemBereik}</div>
-                        <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>gem. bereik · {c.gemSaves} saves</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── 11. CONSISTENTIE ── */}
-            {resultaat.consistentie && (
-              <div style={{ background: B.wit, border: `1px solid ${B.cremeDark}`, borderRadius: 6, padding: "20px 22px", marginBottom: 20 }}>
-                <div style={{ color: B.goud, fontSize: 10, letterSpacing: 2, fontFamily: "sans-serif", fontWeight: 700, marginBottom: 4 }}>📈 CONSISTENTIE</div>
-                <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 12, marginBottom: 16 }}>Posts per week — elke balk is één week</div>
-                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 16, alignItems: "flex-end" }}>
-                  {Object.entries(resultaat.consistentie.weken).sort().map(([week, count]) => (
-                    <div key={week} style={{ textAlign: "center" }}>
-                      <div style={{ color: B.sub, fontSize: 9, fontFamily: "sans-serif", marginBottom: 2 }}>{count}</div>
-                      <div style={{ width: 28, height: Math.max(8, count * 12), background: count >= 4 ? B.bordeaux : count >= 2 ? B.goud : B.cremeDark, borderRadius: "3px 3px 0 0" }} />
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 14 }}>
-                  {[
-                    ["Gemiddeld/week", resultaat.consistentie.gemPerWeek, "streef naar dit als jouw ritme"],
-                    ["Meeste in 1 week", resultaat.consistentie.max, "piekweek"],
-                    ["Minste in 1 week", resultaat.consistentie.min, "rustigste week"],
-                  ].map(([l, v, sub]) => (
-                    <div key={l}>
-                      <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 22, fontWeight: 700 }}>{v}</div>
-                      <div style={{ color: B.goud, fontFamily: "sans-serif", fontSize: 11, fontWeight: 700 }}>{l}</div>
-                      <div style={{ color: B.sub, fontFamily: "sans-serif", fontSize: 11 }}>{sub}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ background: B.goud + "10", border: `1px solid ${B.goud}33`, borderRadius: 4, padding: "10px 14px" }}>
-                  <div style={{ color: B.tekst, fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.6 }}>
-                    {resultaat.consistentie.max > resultaat.consistentie.gemPerWeek * 2
-                      ? `Jouw ritme schommelt sterk (van ${resultaat.consistentie.min} naar ${resultaat.consistentie.max} posts). ${resultaat.consistentie.gemPerWeek}x per week elke week is sterker dan pieken en dalen.`
-                      : `Jouw ritme is redelijk consistent. ${resultaat.consistentie.gemPerWeek}x per week is jouw natuurlijke tempo — bouw daar je planning op.`
-                    }
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── VOLGENDE STAP ── */}
-            <div style={{ background: B.bordeaux, borderRadius: 6, padding: "20px 22px", textAlign: "center" }}>
-              <div style={{ color: B.goudLight, fontSize: 11, letterSpacing: 2, fontFamily: "sans-serif", marginBottom: 8 }}>VOLGENDE STAP</div>
-              <div style={{ color: B.creme, fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Les 2 — Visibility Code Dashboard</div>
-              <div style={{ color: B.creme + "aa", fontFamily: "sans-serif", fontSize: 13, lineHeight: 1.6 }}>
-                Op basis van deze analyse bouw je in de volgende sessie jouw persoonlijke content-dashboard. Jouw ritme, jouw swipe file, jouw systeem.
-              </div>
-            </div>
-
-          </div>
-        )}
+    </div>`;
+  });
+  html+=`</div>`;
+ 
+  // 7. VERBANDEN
+  html+=`<div class="card"><div class="label">🔗 WAAROM WERKTEN JOUW TOP POSTS?</div><div class="sub">De verbanden tussen haakje, content-type en resultaat.</div>`;
+  d.verbanden.forEach(v=>{
+    const lk=v.rank===1?'#650D17':v.rank<=3?'#9F926A':'#cfc5ae';
+    html+=`<div class="verband-item" style="border-left:4px solid ${lk};background:${v.rank===1?'rgba(101,13,23,0.03)':'#FAF7F2'};">
+      <div class="verband-header">
+        <span class="chip" style="background:${v.rank===1?'#650D17':'#9F926A'};color:#FAF7F2;">#${v.rank}</span>
+        <span class="chip" style="background:#E2DAC8;border:1px solid #cfc5ae;color:#7a6555;">${v.haakje}</span>
+        ${chip(v.contentType,'#9F926A')}
       </div>
+      ${v.tekst?`<div style="color:#2e1f14;font-family:sans-serif;font-size:13px;font-style:italic;line-height:1.5;margin-bottom:10px;">"${v.tekst.slice(0,160)}${v.tekst.length>160?'…':''}"</div>`:''}
+      <div style="display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+        <div><div style="color:${v.bereikRatio>=2?'#650D17':v.bereikRatio>=1.5?'#9F926A':'#7a6555'};font-size:16px;font-weight:700;font-family:sans-serif;">${v.bereik.toLocaleString('nl')}${v.bereikRatio>=1.5?` <span style="font-size:10px;">${v.bereikRatio}×</span>`:''}</div><div style="color:#7a6555;font-size:10px;font-family:sans-serif;">Bereik</div></div>
+        <div><div style="color:${v.savesRatio>=2?'#650D17':v.savesRatio>=1.5?'#9F926A':'#7a6555'};font-size:16px;font-weight:700;font-family:sans-serif;">${v.saves}</div><div style="color:#7a6555;font-size:10px;font-family:sans-serif;">Saves</div></div>
+        <div><div style="color:#7a6555;font-size:16px;font-weight:700;font-family:sans-serif;">${v.comments}</div><div style="color:#7a6555;font-size:10px;font-family:sans-serif;">Reacties</div></div>
+      </div>
+      ${v.inzichten.map(ins=>`<div style="display:flex;gap:6px;margin-bottom:4px;"><span style="color:#9F926A;flex-shrink:0;">✦</span><span style="color:#2e1f14;font-family:sans-serif;font-size:12px;line-height:1.5;">${ins}</span></div>`).join('')}
+      ${v.ctVerklaring?`<div style="color:#7a6555;font-family:sans-serif;font-size:11px;margin-top:4px;font-style:italic;">${v.ctVerklaring}</div>`:''}
+    </div>`;
+  });
+  html+=`</div>`;
+ 
+  // 8. HAAKJE KRUISANALYSE
+  const maxH=d.haakjeRanking[0]?.gemBereik||1;
+  const maxS=Math.max(...d.haakjeRanking.map(x=>x.gemSaves))||1;
+  html+=`<div class="card"><div class="label">🎣 WELK HAAKJE WERKT HET BEST?</div><div class="sub">Klik op een type om voorbeelden te zien.</div><div id="haakje-lijst">`;
+  d.haakjeRanking.forEach((h,i)=>{
+    const kleur=HAAKJE_KLEUREN[h.ht]||'#9F926A';
+    const bB=Math.round((h.gemBereik/maxH)*100);
+    const bS=Math.round((h.gemSaves/maxS)*100);
+    const vbs=d.voorbeeldenPerType[h.ht]||[];
+    html+=`<div class="haakje-row" id="haakje-row-${i}">
+      <div class="haakje-header" onclick="toggleHaakje(${i})">
+        <div style="display:flex;align-items:center;gap:8px;">${chip(h.ht,kleur)}<span style="color:#7a6555;font-family:sans-serif;font-size:11px;">${h.count}× gepost</span></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="color:${i===0?'#650D17':'#2e1f14'};font-family:sans-serif;font-size:13px;font-weight:700;">${h.gemBereik.toLocaleString('nl')}</span>
+          <span style="color:#7a6555;font-family:sans-serif;font-size:11px;">bereik · ${h.gemSaves} saves</span>
+          <span id="haakje-arrow-${i}" style="color:#7a6555;font-size:12px;">▼</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;padding-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:40px;color:#7a6555;font-size:10px;font-family:sans-serif;">bereik</div><div style="flex:1;background:rgba(207,197,174,0.4);border-radius:2px;height:7px;position:relative;overflow:hidden;"><div style="position:absolute;left:0;top:0;height:100%;width:${bB}%;background:${kleur};border-radius:2px;"></div></div></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:40px;color:#7a6555;font-size:10px;font-family:sans-serif;">saves</div><div style="flex:1;background:rgba(207,197,174,0.4);border-radius:2px;height:7px;position:relative;overflow:hidden;"><div style="position:absolute;left:0;top:0;height:100%;width:${bS}%;background:${kleur};opacity:0.45;border-radius:2px;"></div></div></div>
+      </div>
+      <div id="haakje-vb-${i}" style="display:none;" class="haakje-voorbeelden" style="background:${kleur}06;border:1px solid ${kleur}22;">
+        ${vbs.length>0?`<div style="color:#7a6555;font-family:sans-serif;font-size:10px;letter-spacing:1px;font-weight:700;margin-bottom:10px;text-transform:uppercase;">Beste haakjes van dit type</div>`+vbs.map((v,vi)=>`<div class="voorbeeld-item"><div class="voorbeeld-num" style="background:${kleur};">${vi+1}</div><div style="flex:1;"><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;font-style:italic;line-height:1.4;margin-bottom:4px;">"${v.zin}${v.zin.length===80?'...':''}"</div><div class="chips"><span class="chip" style="background:#4a7c5918;border:1px solid #4a7c5944;color:#4a7c59;font-size:10px;">📡 ${v.bereik.toLocaleString('nl')}</span><span class="chip" style="background:#c47a2a18;border:1px solid #c47a2a44;color:#c47a2a;font-size:10px;">💾 ${v.saves}</span></div></div></div>`).join(''):`<div style="color:#7a6555;font-family:sans-serif;font-size:12px;font-style:italic;">Geen top-10 voorbeelden voor dit type.</div>`}
+      </div>
+    </div>`;
+  });
+  if (d.haakjeRanking.length>=2) {
+    const bereikTop=d.haakjeRanking[0];
+    const savesTop=[...d.haakjeRanking].sort((a,b)=>b.gemSaves-a.gemSaves)[0];
+    html+=bereikTop.ht===savesTop.ht
+      ?`<div class="inzicht-box">✦ <strong>${bereikTop.ht}</strong> wint op zowel bereik als saves. Dit is jouw dominante haakje.</div>`
+      :`<div class="inzicht-box">✦ <strong>${bereikTop.ht}</strong> scoort het meeste bereik — trekt nieuwe mensen aan.<br>✦ <strong>${savesTop.ht}</strong> scoort de meeste saves — wordt bewaard en onthouden.<br><span style="color:#7a6555;font-size:12px;">Bereik-haakjes voor groei, saves-haakjes voor autoriteit.</span></div>`;
+  }
+  html+=`</div></div>`;
+ 
+  // 9. CTA VERGELIJKING
+  if (d.ctaVergelijking.metCTA&&d.ctaVergelijking.zonderCTA) {
+    const {metCTA,zonderCTA}=d.ctaVergelijking;
+    const pct=zonderCTA.gemBereik>0?Math.round(((metCTA.gemBereik-zonderCTA.gemBereik)/zonderCTA.gemBereik)*100):0;
+    html+=`<div class="card"><div class="label">⚡ POSTS MÉT VS ZONDER CTA</div><div class="sub">Doet een CTA iets met je bereik en saves?</div>
+      <div class="grid2" style="margin-bottom:14px;">
+        <div style="background:rgba(101,13,23,0.05);border:1px solid rgba(101,13,23,0.2);border-radius:4px;padding:12px 14px;">
+          <div style="color:#650D17;font-family:sans-serif;font-size:11px;font-weight:700;margin-bottom:8px;">Mét CTA</div>
+          <div style="color:#2e1f14;font-family:sans-serif;font-size:22px;font-weight:700;">${metCTA.gemBereik.toLocaleString('nl')}</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:11px;">gem. bereik · ${metCTA.count} posts</div>
+          <div style="color:#2e1f14;font-family:sans-serif;font-size:16px;font-weight:700;margin-top:6px;">${metCTA.gemSaves}</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:11px;">gem. saves</div>
+        </div>
+        <div style="background:rgba(159,146,106,0.08);border:1px solid rgba(159,146,106,0.3);border-radius:4px;padding:12px 14px;">
+          <div style="color:#9F926A;font-family:sans-serif;font-size:11px;font-weight:700;margin-bottom:8px;">Zonder CTA</div>
+          <div style="color:#2e1f14;font-family:sans-serif;font-size:22px;font-weight:700;">${zonderCTA.gemBereik.toLocaleString('nl')}</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:11px;">gem. bereik · ${zonderCTA.count} posts</div>
+          <div style="color:#2e1f14;font-family:sans-serif;font-size:16px;font-weight:700;margin-top:6px;">${zonderCTA.gemSaves}</div>
+          <div style="color:#7a6555;font-family:sans-serif;font-size:11px;">gem. saves</div>
+        </div>
+      </div>
+      <div class="inzicht-box">${Math.abs(pct)<10?'Posts mét en zonder CTA presteren vergelijkbaar op bereik. Een CTA dempt je bereik niet.':pct>0?`Posts mét CTA halen ${pct}% meer bereik. Jouw publiek reageert op actie-uitnodigingen.`:`Posts zonder CTA halen ${Math.abs(pct)}% meer bereik. Gebruik CTA-posts voor conversie, niet voor bereik.`}</div>
+    </div>`;
+  }
+ 
+  // 10. CAPTION LENGTE
+  html+=`<div class="card"><div class="label">✍️ CAPTION LENGTE</div><div class="sub">Wat werkt beter — kort of lang?</div>`;
+  d.captionAdvies.forEach((c,i)=>{
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:4px;margin-bottom:8px;background:${i===0?'rgba(159,146,106,0.12)':'#E2DAC8'};border:1px solid ${i===0?'#9F926A':'#cfc5ae'};">
+      <div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;font-weight:${i===0?700:400};">${c.label}</div><div style="color:#7a6555;font-family:sans-serif;font-size:11px;margin-top:2px;">${c.count} posts</div></div>
+      <div style="text-align:right;"><div style="color:${i===0?'#650D17':'#2e1f14'};font-family:sans-serif;font-size:16px;font-weight:700;">${c.gemBereik}</div><div style="color:#7a6555;font-family:sans-serif;font-size:11px;">gem. bereik · ${c.gemSaves} saves</div></div>
+    </div>`;
+  });
+  html+=`</div>`;
+ 
+  // 11. CONSISTENTIE
+  const weken=Object.entries(d.weekStats).sort();
+  const maxW=Math.max(...weken.map(([,v])=>v));
+  html+=`<div class="card"><div class="label">📈 CONSISTENTIE</div><div class="sub">Posts per week</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+      ${weken.map(([week,count])=>`<div style="text-align:center;"><div style="color:#7a6555;font-size:9px;font-family:sans-serif;margin-bottom:2px;">${count}</div><div style="width:28px;height:${Math.max(8,count*12)}px;background:${count>=4?'#650D17':count>=2?'#9F926A':'#cfc5ae'};border-radius:3px 3px 0 0;"></div></div>`).join('')}
     </div>
-  );
+    <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px;">
+      <div><div style="color:#2e1f14;font-family:sans-serif;font-size:22px;font-weight:700;">${d.gemPostsPerWeek}</div><div style="color:#9F926A;font-family:sans-serif;font-size:11px;font-weight:700;">Gemiddeld/week</div></div>
+      <div><div style="color:#2e1f14;font-family:sans-serif;font-size:22px;font-weight:700;">${d.maxPostsPerWeek}</div><div style="color:#9F926A;font-family:sans-serif;font-size:11px;font-weight:700;">Meeste in 1 week</div></div>
+    </div>
+    <div class="inzicht-box">${d.maxPostsPerWeek>d.gemPostsPerWeek*2?`Jouw ritme schommelt sterk. ${d.gemPostsPerWeek}× per week elke week is sterker dan pieken en dalen.`:`Jouw ritme is redelijk consistent. ${d.gemPostsPerWeek}× per week is jouw natuurlijke tempo.`}</div>
+  </div>`;
+ 
+  // VOLGENDE STAP
+  html+=`<div class="volgende">
+    <div style="color:#c4b48a;font-size:11px;letter-spacing:2px;font-family:sans-serif;margin-bottom:8px;">VOLGENDE STAP</div>
+    <div style="color:#E2DAC8;font-size:16px;font-weight:700;margin-bottom:6px;">Les 2 — Visibility Code Dashboard</div>
+    <div style="color:rgba(226,218,200,0.7);font-family:sans-serif;font-size:13px;line-height:1.6;">Op basis van deze analyse bouw je in de volgende sessie jouw persoonlijke content-dashboard. Jouw ritme, jouw swipe file, jouw systeem.</div>
+  </div>`;
+ 
+  el.innerHTML=html;
 }
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(VisibilityAnalyse));
-    </script>
-  </body>
+ 
+function toggleHaakje(i) {
+  const vb=document.getElementById('haakje-vb-'+i);
+  const arrow=document.getElementById('haakje-arrow-'+i);
+  const open=vb.style.display==='none';
+  vb.style.display=open?'block':'none';
+  arrow.textContent=open?'▲':'▼';
+}
+ 
+// Start
+toonFase('intro');
+ 
+// Drag & drop
+document.addEventListener('DOMContentLoaded',()=>{
+  const zone=document.querySelector('.upload-zone');
+  if (zone) {
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='#9F926A';});
+    zone.addEventListener('dragleave',()=>{zone.style.borderColor='#cfc5ae';});
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();
+      zone.style.borderColor='#cfc5ae';
+      const file=e.dataTransfer.files[0];
+      if (file) { document.getElementById('csv-input').files=e.dataTransfer.files; handleFile({target:{files:[file]}}); }
+    });
+  }
+});
+</script>
+</body>
 </html>
