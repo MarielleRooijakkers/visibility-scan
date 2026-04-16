@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visibility Scan — The Industry Playground</title>
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #E2DAC8; font-family: Georgia, serif; min-height: 100vh; }
@@ -20,6 +21,19 @@
   .btn { background: #650D17; color: #E2DAC8; border: none; border-radius: 4px; padding: 12px 28px; font-size: 14px; font-family: sans-serif; cursor: pointer; font-weight: 700; margin-top: 16px; }
   .btn:hover { background: #7a0f1c; }
   .btn-outline { background: transparent; border: 1px solid #cfc5ae; color: #7a6555; border-radius: 3px; padding: 6px 14px; font-size: 12px; font-family: sans-serif; cursor: pointer; }
+
+  /* PDF DOWNLOAD BUTTON */
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #FAF7F2; color: #650D17;
+    border: 1.5px solid #650D17; border-radius: 4px;
+    padding: 8px 18px; font-size: 13px; font-family: sans-serif;
+    cursor: pointer; font-weight: 700; transition: all 0.15s;
+  }
+  .btn-download:hover { background: #650D17; color: #FAF7F2; }
+  .btn-download:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-download svg { flex-shrink: 0; }
+
   .stat-cards { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
   .stat-card { background: #FAF7F2; border: 1px solid #cfc5ae; border-radius: 6px; padding: 16px 18px; flex: 1; min-width: 140px; }
   .stat-num { color: #2e1f14; font-size: 28px; font-weight: 700; font-family: sans-serif; line-height: 1; }
@@ -59,23 +73,62 @@
   .top5-content { flex: 1; padding-left: 14px; }
   .strategisch { background: rgba(101,13,23,0.05); border: 1px solid rgba(101,13,23,0.2); border-radius: 6px; padding: 14px 18px; margin-bottom: 12px; }
   #fase-intro, #fase-upload, #fase-resultaat { display: none; }
+
+  /* PRINT / PDF styles */
+  @media print {
+    body { background: #E2DAC8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .header { background: #650D17 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .btn-download, .btn-outline, #pdf-overlay { display: none !important; }
+    .container { padding: 16px !important; }
+    .card { break-inside: avoid; page-break-inside: avoid; }
+    .stat-cards { break-inside: avoid; }
+    [id^="haakje-vb-"] { display: block !important; }
+    .volgende { background: #650D17 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* PDF loading overlay */
+  #pdf-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(46,31,20,0.7);
+    z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  }
+  #pdf-overlay.active { display: flex; }
+  #pdf-overlay-box {
+    background: #FAF7F2; border-radius: 8px; padding: 32px 40px; text-align: center;
+    font-family: sans-serif;
+  }
+  #pdf-overlay-box .pdf-spinner {
+    width: 40px; height: 40px; border: 3px solid #cfc5ae; border-top-color: #650D17;
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #pdf-overlay-box p { color: #2e1f14; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  #pdf-overlay-box small { color: #7a6555; font-size: 12px; }
 </style>
 </head>
 <body>
- 
+
+<!-- PDF loading overlay -->
+<div id="pdf-overlay">
+  <div id="pdf-overlay-box">
+    <div class="pdf-spinner"></div>
+    <p>Rapport wordt gegenereerd...</p>
+    <small>Dit duurt even. Niet wegklikken.</small>
+  </div>
+</div>
+
 <div class="header">
   <div class="header-sub">THE INDUSTRY PLAYGROUND</div>
   <div class="header-title">Visibility Scan</div>
   <div class="header-les">Les 1 · Jouw content onder de loep</div>
 </div>
- 
+
 <div class="container">
- 
+
   <!-- INTRO -->
   <div id="fase-intro">
     <h2>Wat doet jouw content<br>eigenlijk?</h2>
     <p style="color:#7a6555;font-family:sans-serif;font-size:15px;line-height:1.7;margin-bottom:32px;">Niet wat jij denkt dat het doet, maar wat de data zegt. Upload je Meta export en ontdek in 30 seconden welke posts werken, welke niet, en waarom.</p>
- 
+
     <div class="card" style="margin-bottom:20px;">
       <div class="label">ELKE POST HEEFT EEN FUNCTIE</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
@@ -101,7 +154,7 @@
         </div>
       </div>
     </div>
- 
+
     <div class="card" style="margin-bottom:28px;">
       <div class="label">ZO EXPORTEER JE JE META DATA</div>
       <div style="margin-top:14px;">
@@ -113,10 +166,10 @@
         <div class="stap-item"><div class="stap-num">6</div><div style="color:#2e1f14;font-family:sans-serif;font-size:13px;line-height:1.5;padding-top:3px;">Upload het bestand hieronder</div></div>
       </div>
     </div>
- 
+
     <button class="btn" onclick="toonFase('upload')">→ Ik ben klaar om te uploaden</button>
   </div>
- 
+
   <!-- UPLOAD -->
   <div id="fase-upload">
     <h2 style="margin-bottom:8px;">Upload je Meta CSV</h2>
@@ -130,28 +183,38 @@
     <div id="fout-msg" class="fout" style="display:none;"></div>
     <button class="btn-outline" onclick="toonFase('intro')" style="margin-top:16px;">← Terug</button>
   </div>
- 
+
   <!-- RESULTAAT -->
   <div id="fase-resultaat">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
       <div>
         <h2 style="font-size:24px;">Jouw content analyse</h2>
         <div id="bestand-naam" style="color:#7a6555;font-family:sans-serif;font-size:12px;"></div>
       </div>
-      <button class="btn-outline" onclick="toonFase('upload')">Nieuw bestand</button>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-download" id="pdf-btn" onclick="downloadPDF()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Opslaan als PDF
+        </button>
+        <button class="btn-outline" onclick="toonFase('upload')">Nieuw bestand</button>
+      </div>
     </div>
     <div id="resultaat-inhoud"></div>
   </div>
- 
+
 </div>
- 
+
 <script>
 const B = {
   bordeaux: "#650D17", goud: "#9F926A", goudLight: "#c4b48a",
   creme: "#E2DAC8", cremeDark: "#cfc5ae", wit: "#FAF7F2",
   tekst: "#2e1f14", sub: "#7a6555"
 };
- 
+
 const TYPE_KLEUREN = {
   "Visie": "#650D17", "Klantverhaal": "#4a7c59", "Klantverhaal + CTA": "#2d6644",
   "HOT Lead": "#c47a2a", "Help": "#9F926A", "Rolmodel": "#7a5c9e",
@@ -162,15 +225,260 @@ const HAAKJE_KLEUREN = {
   "Resultaat-opener": "#7a5c9e", "Ik-verhaal": "#9F926A", "Persoonlijk ik-verhaal": "#9e5c7a",
   "Vraag": "#5c7a9e", "Emoji-opener": "#c4a020", "Getal/resultaat": "#3a6c8a", "Overig": "#cfc5ae"
 };
- 
+
 let openHaakje = null;
- 
+let huidigBestandNaam = "visibility-scan";
+
 function toonFase(fase) {
   ['intro','upload','resultaat'].forEach(f => {
     document.getElementById('fase-' + f).style.display = f === fase ? 'block' : 'none';
   });
 }
- 
+
+// ─── PDF DOWNLOAD via nieuw tabblad ─────────────────────────────
+function downloadPDF() {
+  // Verzamel alle haakje-inhoud (ook verborgen)
+  const verborgen = document.querySelectorAll('[id^="haakje-vb-"]');
+  verborgen.forEach(el => el.style.display = 'block');
+  const rapportHTML = document.getElementById('resultaat-inhoud').innerHTML;
+  const bestandNaam = huidigBestandNaam.replace('.csv','') || 'visibility-scan';
+  verborgen.forEach(el => el.style.display = 'none');
+
+  const datum = new Date().toLocaleDateString('nl-NL', {day:'2-digit',month:'long',year:'numeric'});
+
+  const printPagina = `<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Visibility Scan — Marielle Rooijakkers</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #E2DAC8;
+    font-family: Georgia, serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color: #2e1f14;
+  }
+
+  /* ── SAVE BAR (verborgen bij printen) ── */
+  .save-bar {
+    background: #2e1f14;
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .save-bar-left { color: #c4b48a; font-family: sans-serif; font-size: 13px; }
+  .save-bar-left strong { color: #E2DAC8; }
+  .save-btn {
+    background: #650D17; color: #E2DAC8; border: none; border-radius: 4px;
+    padding: 10px 24px; font-size: 13px; font-family: sans-serif;
+    cursor: pointer; font-weight: 700; letter-spacing: 0.5px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .save-btn:hover { background: #7a0f1c; }
+
+  /* ── COVER ── */
+  .cover {
+    background: #650D17;
+    padding: 48px 40px 36px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .cover-eyebrow {
+    color: rgba(226,218,200,0.5); font-size: 9px; letter-spacing: 4px;
+    font-family: sans-serif; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .cover-title {
+    color: #E2DAC8; font-size: 32px; font-weight: 700; line-height: 1.15; margin-bottom: 6px;
+  }
+  .cover-sub {
+    color: #c4b48a; font-family: sans-serif; font-size: 13px; margin-bottom: 28px;
+  }
+  .cover-divider { border: none; border-top: 1px solid rgba(226,218,200,0.2); margin-bottom: 20px; }
+  .cover-meta {
+    display: flex; gap: 32px; flex-wrap: wrap;
+  }
+  .cover-meta-item { }
+  .cover-meta-label { color: rgba(226,218,200,0.45); font-size: 9px; letter-spacing: 2px; font-family: sans-serif; text-transform: uppercase; margin-bottom: 3px; }
+  .cover-meta-val { color: #E2DAC8; font-family: sans-serif; font-size: 13px; font-weight: 600; }
+
+  /* ── CONTENT ── */
+  .container { max-width: 680px; margin: 0 auto; padding: 32px 24px 48px; }
+
+  .section-title {
+    color: #650D17; font-family: sans-serif; font-size: 9px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; margin: 28px 0 12px;
+    padding-bottom: 6px; border-bottom: 2px solid #650D17;
+  }
+
+  .card {
+    background: #FAF7F2; border: 1px solid #cfc5ae; border-radius: 6px;
+    padding: 18px 20px; margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid;
+  }
+  .label { color: #9F926A; font-size: 9px; letter-spacing: 2px; font-family: sans-serif; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
+  .sub { color: #7a6555; font-family: sans-serif; font-size: 11px; margin-bottom: 14px; }
+
+  /* ── STAT CARDS ── */
+  .stat-cards { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; break-inside: avoid; }
+  .stat-card {
+    background: #FAF7F2; border: 1px solid #cfc5ae; border-radius: 6px;
+    padding: 14px 16px; flex: 1; min-width: 120px;
+  }
+  .stat-num { color: #2e1f14; font-size: 26px; font-weight: 700; font-family: sans-serif; line-height: 1; }
+  .stat-label { color: #7a6555; font-size: 10px; font-family: sans-serif; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-sub { color: #7a6555; font-size: 11px; font-family: sans-serif; margin-top: 3px; }
+
+  /* ── BARS ── */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .bar-label { width: 80px; font-family: sans-serif; font-size: 11px; color: #2e1f14; flex-shrink: 0; }
+  .bar-track { flex: 1; background: rgba(207,197,174,0.4); border-radius: 3px; height: 22px; position: relative; overflow: hidden; }
+  .bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bar-val { position: absolute; right: 7px; top: 50%; transform: translateY(-50%); font-size: 10px; font-family: sans-serif; font-weight: 600; color: #7a6555; }
+  .bar-val-light { color: #FAF7F2; }
+
+  /* ── CHIPS ── */
+  .chip { border-radius: 3px; padding: 2px 6px; font-size: 10px; font-family: sans-serif; font-weight: 600; display: inline-block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ── INZICHT BOX ── */
+  .inzicht-box {
+    background: rgba(159,146,106,0.1); border: 1px solid rgba(159,146,106,0.3);
+    border-radius: 4px; padding: 10px 14px; margin-top: 12px;
+    color: #2e1f14; font-family: sans-serif; font-size: 12px; line-height: 1.7;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  /* ── POSTS ── */
+  .post-item { padding: 10px 0; border-bottom: 1px solid #cfc5ae; display: flex; gap: 12px; align-items: flex-start; }
+  .post-item:last-child { border-bottom: none; }
+  .post-num { min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .post-tekst { color: #2e1f14; font-family: sans-serif; font-size: 12px; font-style: italic; line-height: 1.5; margin-bottom: 6px; }
+
+  /* ── GRID ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── VERBAND ── */
+  .verband-item { border: 1px solid #cfc5ae; border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .verband-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+
+  /* ── HAAKJES ── */
+  .haakje-row { border-bottom: 1px solid rgba(207,197,174,0.3); }
+  .haakje-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 5px; }
+  .haakje-voorbeelden { padding: 10px 12px; margin-bottom: 8px; display: block !important; }
+  .voorbeeld-item { display: flex; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(207,197,174,0.3); }
+  .voorbeeld-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .voorbeeld-num { min-width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; color: #FAF7F2; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* ── OVERIG ── */
+  .strategisch { background: rgba(101,13,23,0.05); border: 1px solid rgba(101,13,23,0.2); border-radius: 5px; padding: 12px 16px; margin-bottom: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .top5-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .top5-num { min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: sans-serif; flex-shrink: 0; margin-top: 2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .top5-content { flex: 1; padding-left: 12px; }
+
+  /* ── FOOTER CARD ── */
+  .volgende {
+    background: #650D17 !important; border-radius: 6px; padding: 20px 22px; text-align: center;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-top: 8px;
+  }
+
+  /* ── PDF FOOTER ── */
+  .pdf-footer {
+    margin-top: 32px; padding-top: 16px; border-top: 1px solid #cfc5ae;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: sans-serif; font-size: 10px; color: #9F926A;
+  }
+
+  /* ── VERBERG BIJ PRINTEN ── */
+  @page { margin: 10mm; size: A4; }
+  @media print {
+    .save-bar { display: none !important; }
+    body { background: #E2DAC8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .cover { background: #650D17 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .volgende { background: #650D17 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .stat-card { background: #FAF7F2 !important; border: 1px solid #cfc5ae !important; }
+    .card { background: #FAF7F2 !important; border: 1px solid #cfc5ae !important; }
+    .inzicht-box { background: rgba(159,146,106,0.15) !important; border: 1px solid rgba(159,146,106,0.4) !important; }
+    .strategisch { background: rgba(101,13,23,0.06) !important; }
+    .bar-fill { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .bar-track { background: rgba(207,197,174,0.5) !important; }
+    .chip { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .post-num, .top5-num, .voorbeeld-num { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    [id^="haakje-vb-"] { display: block !important; }
+    .verband-item { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+
+  [id^="haakje-vb-"] { display: block !important; }
+  [id^="haakje-arrow-"] { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <div class="save-bar-left">
+    <strong>Visibility Scan Rapport</strong> — zet "Kop- en voetteksten" UIT in de printinstellingen
+  </div>
+  <button class="save-btn" onclick="window.print()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Opslaan als PDF
+  </button>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">The Industry Playground · Content Studio</div>
+  <div class="cover-title">Visibility Scan</div>
+  <div class="cover-sub">by Marielle Rooijakkers</div>
+  <hr class="cover-divider">
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Bestand</div>
+      <div class="cover-meta-val">${bestandNaam}</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Gegenereerd op</div>
+      <div class="cover-meta-val">${datum}</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Les</div>
+      <div class="cover-meta-val">Les 1 · Jouw content onder de loep</div>
+    </div>
+  </div>
+</div>
+
+<!-- RAPPORT -->
+<div class="container">
+  ${rapportHTML}
+
+  <!-- PDF FOOTER -->
+  <div class="pdf-footer">
+    <span>Visibility Scan · The Industry Playground · by Marielle Rooijakkers</span>
+    <span>${datum}</span>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.haakje-header').forEach(h => {
+    h.style.cursor = 'default';
+    h.onclick = null;
+  });
+  document.querySelectorAll('[id^="haakje-vb-"]').forEach(el => el.style.display = 'block');
+  document.querySelectorAll('[id^="haakje-arrow-"]').forEach(el => el.style.display = 'none');
+<\/script>
+</body>
+</html>`;
+
+  const tab = window.open('', '_blank');
+  if (!tab) {
+    alert('Pop-up geblokkeerd. Sta pop-ups toe voor deze pagina en probeer opnieuw.');
+    return;
+  }
+  tab.document.open();
+  tab.document.write(printPagina);
+  tab.document.close();
+}
+
+// ─── CSV PARSING ─────────────────────────────────────────────────
 function parseCSV(text) {
   const results = [];
   let cur = "", inQuotes = false, row = [];
@@ -185,7 +493,7 @@ function parseCSV(text) {
   }
   return results;
 }
- 
+
 function analyseerCSV(inhoud) {
   const parsed = parseCSV(inhoud);
   if (parsed.length < 2) return null;
@@ -195,7 +503,7 @@ function analyseerCSV(inhoud) {
     headers.forEach((h,i) => { obj[h] = (vals[i]||"").replace(/^"|"$/g,"").trim(); });
     return obj;
   }).filter(r => Object.values(r).some(v=>v));
- 
+
   const find = (keys) => headers.find(h => keys.some(k => h.includes(k))) || null;
   const bereikCol   = find(["bereik"]);
   const savesCol    = find(["opgeslagen"]);
@@ -204,7 +512,7 @@ function analyseerCSV(inhoud) {
   const typeCol     = find(["berichttype","type"]);
   const beschCol    = find(["omschrijving","beschrijving","caption"]);
   const tijdCol     = find(["publicatietijdstip","tijdstip","datum","date","published","time"]);
- 
+
   const toN = (v) => parseFloat((v||"0").replace(/[^0-9.,]/g,"").replace(",",".")) || 0;
   const parseDate = (v) => {
     if (!v) return null;
@@ -214,12 +522,12 @@ function analyseerCSV(inhoud) {
     if (m2) return new Date(+m2[1],+m2[2]-1,+m2[3]);
     return null;
   };
- 
+
   let totBereik=0, totSaves=0, totComments=0;
   const typeStats={}, allePostsGescoord=[], dagStats={}, weekStats={};
   const captionStats={kort:{b:0,s:0,n:0},middel:{b:0,s:0,n:0},lang:{b:0,s:0,n:0}};
   const DAGEN_NL=["Zo","Ma","Di","Wo","Do","Vr","Za"];
- 
+
   rows.forEach(r => {
     const bereik   = bereikCol   ? toN(r[bereikCol])   : 0;
     const saves    = savesCol    ? toN(r[savesCol])    : 0;
@@ -228,13 +536,13 @@ function analyseerCSV(inhoud) {
     const type     = typeCol     ? r[typeCol] : "post";
     const score    = bereik + saves*3 + comments*2 + likes;
     const tekst    = beschCol    ? r[beschCol] : "";
- 
+
     totBereik+=bereik; totSaves+=saves; totComments+=comments;
     if (!typeStats[type]) typeStats[type]={bereik:0,saves:0,comments:0,likes:0,count:0};
     typeStats[type].bereik+=bereik; typeStats[type].saves+=saves;
     typeStats[type].comments+=comments; typeStats[type].likes+=likes; typeStats[type].count+=1;
     allePostsGescoord.push({bereik,saves,comments,likes,type,score,tekst});
- 
+
     const t=tekst.toLowerCase();
     const sc={"Klantverhaal":0,"HOT Lead":0,"Visie":0,"Persoonlijk":0,"Rolmodel":0,"Help":0,"Hub":0};
     if (/\btoen (ze|hij) bij me (kwam|kwamen)\b/.test(t)) sc["Klantverhaal"]+=6;
@@ -261,7 +569,7 @@ function analyseerCSV(inhoud) {
     const heeftCTA=/\b(comment|reageer|dm\b|stuur me|meld je|wachtlijst|link in bio)\b/i.test(tekst);
     const heeftManyChat=/\bcomment\b.{0,40}\b(voor|om|krijg)\b/i.test(tekst)||/\b(comment|reageer)\s+[A-Z]{2,}/i.test(tekst);
     if (contentType==="Klantverhaal"&&heeftCTA) contentType="Klantverhaal + CTA";
- 
+
     const tk2=tekst.toLowerCase().trim();
     let haakjeType="Overig";
     if (/^ik\b/.test(tk2)&&/\b(verwed|weet zeker)\b/.test(tk2)) haakjeType="Stellingname";
@@ -272,10 +580,10 @@ function analyseerCSV(inhoud) {
     else if (/^ik\b/.test(tk2)&&/\b(vroeger|destijds|toen ik)\b/.test(tk2)) haakjeType="Persoonlijk ik-verhaal";
     else if (/^ik\b/.test(tk2)) haakjeType="Ik-verhaal";
     else if (/^(😱|🚨|⚡|🔥|💥)/.test(tekst.trim())) haakjeType="Emoji-opener";
- 
+
     const last=allePostsGescoord[allePostsGescoord.length-1];
     last.contentType=contentType; last.heeftCTA=heeftCTA; last.heeftManyChat=heeftManyChat; last.haakjeType=haakjeType;
- 
+
     const dt=tijdCol?parseDate(r[tijdCol]):null;
     if (dt) {
       const dag=dt.getDay();
@@ -289,17 +597,17 @@ function analyseerCSV(inhoud) {
     const cat=len<150?"kort":len<400?"middel":"lang";
     captionStats[cat].b+=bereik; captionStats[cat].s+=saves; captionStats[cat].n+=1;
   });
- 
+
   const top10=[...allePostsGescoord].sort((a,b)=>b.score-a.score).slice(0,10);
   const n=rows.length;
   const gemBereikTotaal=Math.round(totBereik/n);
   const gemSavesTotaal=+(totSaves/n).toFixed(1);
- 
+
   const typeRanking=Object.entries(typeStats).map(([type,s])=>({
     type, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1),
     gemComments:+(s.comments/s.count).toFixed(1), count:s.count
   })).sort((a,b)=>b.gemBereik-a.gemBereik);
- 
+
   const contentTypeStats={};
   allePostsGescoord.forEach(p=>{
     if (!contentTypeStats[p.contentType]) contentTypeStats[p.contentType]={bereik:0,saves:0,count:0};
@@ -310,19 +618,19 @@ function analyseerCSV(inhoud) {
   const contentTypeRanking=Object.entries(contentTypeStats).map(([ct,s])=>({
     ct, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
   })).sort((a,b)=>b.gemBereik-a.gemBereik);
- 
+
   const dagRanking=Object.entries(dagStats).map(([dag,s])=>({
     dag:DAGEN_NL[+dag], gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
   })).sort((a,b)=>b.gemBereik-a.gemBereik);
- 
+
   const wekenMetPosts=Object.values(weekStats);
   const gemPostsPerWeek=wekenMetPosts.length?+(wekenMetPosts.reduce((a,b)=>a+b,0)/wekenMetPosts.length).toFixed(1):0;
- 
+
   const captionAdvies=Object.entries(captionStats).filter(([,v])=>v.n>0).map(([cat,v])=>({
     cat, label:cat==="kort"?"Kort (<150 tekens)":cat==="middel"?"Middel (150-400)":"Lang (400+)",
     gemBereik:Math.round(v.b/v.n), gemSaves:+(v.s/v.n).toFixed(1), count:v.n
   })).sort((a,b)=>b.gemBereik-a.gemBereik);
- 
+
   const haakjeStats={};
   allePostsGescoord.forEach(p=>{
     const ht=p.haakjeType||"Overig";
@@ -332,14 +640,14 @@ function analyseerCSV(inhoud) {
   const haakjeRanking=Object.entries(haakjeStats).filter(([,s])=>s.count>=2).map(([ht,s])=>({
     ht, gemBereik:Math.round(s.bereik/s.count), gemSaves:+(s.saves/s.count).toFixed(1), count:s.count
   })).sort((a,b)=>b.gemBereik-a.gemBereik);
- 
+
   const ctaMet=allePostsGescoord.filter(p=>p.heeftCTA);
   const ctaZonder=allePostsGescoord.filter(p=>!p.heeftCTA);
   const ctaVergelijking={
     metCTA:ctaMet.length>0?{count:ctaMet.length,gemBereik:Math.round(ctaMet.reduce((a,p)=>a+p.bereik,0)/ctaMet.length),gemSaves:+(ctaMet.reduce((a,p)=>a+p.saves,0)/ctaMet.length).toFixed(1)}:null,
     zonderCTA:ctaZonder.length>0?{count:ctaZonder.length,gemBereik:Math.round(ctaZonder.reduce((a,p)=>a+p.bereik,0)/ctaZonder.length),gemSaves:+(ctaZonder.reduce((a,p)=>a+p.saves,0)/ctaZonder.length).toFixed(1)}:null,
   };
- 
+
   const verbanden=top10.slice(0,5).map((post,i)=>{
     const inzichten=[];
     const tk=post.tekst.toLowerCase();
@@ -357,7 +665,7 @@ function analyseerCSV(inhoud) {
     const ctVerk={"Klantverhaal":"Klantverhalen bouwen vertrouwen.","HOT Lead":"Directe actie-content scoort op bereik.","Visie":"Standpunt-content polariseert.","Persoonlijk":"Maakt je menselijk.","Rolmodel":"Eigen resultaten als bewijs.","Help":"Hoge save-waarde.","Hub":"Converteert warm publiek."};
     return {rank:i+1,haakje,contentType:post.contentType,ctVerklaring:ctVerk[post.contentType]||"",bereik:post.bereik,saves:post.saves,comments:post.comments,bereikRatio,savesRatio,inzichten,tekst:post.tekst};
   });
- 
+
   const voorbeeldenPerType={};
   top10.forEach(p=>{
     const ht=p.haakjeType||"Overig";
@@ -367,13 +675,14 @@ function analyseerCSV(inhoud) {
       voorbeeldenPerType[ht].push({zin:eersteZin,bereik:p.bereik,saves:p.saves});
     }
   });
- 
+
   return {n,gemBereik:gemBereikTotaal,gemSaves:gemSavesTotaal,typeRanking,top10,contentTypeRanking,dagRanking,captionAdvies,haakjeRanking,ctaVergelijking,verbanden,voorbeeldenPerType,weekStats,gemPostsPerWeek,maxPostsPerWeek:Math.max(...wekenMetPosts),minPostsPerWeek:Math.min(...wekenMetPosts)};
 }
- 
+
 function handleFile(e) {
   const file=e.target.files[0];
   if (!file) return;
+  huidigBestandNaam = file.name;
   document.getElementById('fout-msg').style.display='none';
   const reader=new FileReader();
   reader.onload=(ev)=>{
@@ -389,27 +698,25 @@ function handleFile(e) {
   };
   reader.readAsText(file,'utf-8');
 }
- 
+
 function bar(kleur, breedte, tekst, licht) {
   return `<div class="bar-track"><div class="bar-fill" style="width:${breedte}%;background:${kleur};"></div><div class="bar-val ${licht?'bar-val-light':''}">${tekst}</div></div>`;
 }
- 
+
 function chip(tekst, kleur) {
   return `<span class="chip" style="background:${kleur}18;border:1px solid ${kleur}44;color:${kleur};">${tekst}</span>`;
 }
- 
+
 function renderResultaat(d) {
   const el=document.getElementById('resultaat-inhoud');
   let html='';
- 
-  // 1. STATS
+
   html+=`<div class="stat-cards">
     <div class="stat-card" style="border-top:3px solid #650D17;"><div class="stat-label">Posts geanalyseerd</div><div class="stat-num">${d.n}</div><div class="stat-sub">afgelopen periode</div></div>
     <div class="stat-card" style="border-top:3px solid #4a7c59;"><div class="stat-label">Gem. bereik</div><div class="stat-num">${d.gemBereik.toLocaleString('nl')}</div><div class="stat-sub">per post</div></div>
     <div class="stat-card" style="border-top:3px solid #c47a2a;"><div class="stat-label">Gem. saves</div><div class="stat-num">${d.gemSaves}</div><div class="stat-sub">per post</div></div>
   </div>`;
- 
-  // 2. FORMATS
+
   html+=`<div class="card"><div class="label">JOUW FORMATS — WAT DOET WELK</div>`;
   d.typeRanking.forEach((t,i)=>{
     html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:${i<d.typeRanking.length-1?'1px solid #cfc5ae':'none'};">
@@ -418,8 +725,7 @@ function renderResultaat(d) {
     </div>`;
   });
   html+=`</div>`;
- 
-  // 3. TOP 10
+
   html+=`<div class="card"><div class="label">🏅 TOP 10 BESTE POSTS</div><div class="sub">Saves tellen 3× mee, comments 2×, bereik 1×</div>`;
   d.top10.forEach((p,i)=>{
     const bg=i===0?'#650D17':i<3?'#9F926A':'#cfc5ae';
@@ -438,8 +744,7 @@ function renderResultaat(d) {
     </div>`;
   });
   html+=`</div>`;
- 
-  // 4. CONTENT TYPE SPLIT
+
   const opVolume=[...d.contentTypeRanking].sort((a,b)=>b.count-a.count);
   const opPerf=[...d.contentTypeRanking].sort((a,b)=>b.gemBereik-a.gemBereik);
   const maxCount=opVolume[0]?.count||1;
@@ -463,16 +768,14 @@ function renderResultaat(d) {
   });
   html+=`<div style="margin-top:10px;color:#7a6555;font-family:sans-serif;font-size:10px;font-style:italic;">⚠️ = minder dan 5 posts</div></div></div>
   <div style="margin-top:10px;color:#7a6555;font-family:sans-serif;font-size:11px;font-style:italic;">💡 In Les 2 koppel je elk type aan een doel en een vaste plek in je weekritme.</div></div>`;
- 
-  // 5. INZICHTEN
+
   html+=`<div class="card" style="background:rgba(159,146,106,0.1);border-color:rgba(159,146,106,0.3);">
     <div class="label">✦ INZICHTEN</div>
     <div style="display:flex;gap:12px;margin-bottom:14px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">${d.typeRanking[0]?.type||''} bereikt de meeste mensen. Bereik ≠ omzet — klantverhalen bouwen autoriteit, HOT leads converteren warm publiek.</div></div>
     <div style="display:flex;gap:12px;margin-bottom:14px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">${d.gemSaves<1?`Saves zijn laag (${d.gemSaves} gem.) — maak meer concrete, opslagwaardige content.`:`Saves liggen op ${d.gemSaves} gemiddeld — zet hier ManyChat op.`}</div></div>
     <div style="display:flex;gap:12px;"><div style="color:#9F926A;font-size:16px;flex-shrink:0;">→</div><div style="color:#2e1f14;font-family:sans-serif;font-size:14px;line-height:1.7;">Verkopen is niet zichtbaar in deze data — dat zit in je DMs en ManyChat.</div></div>
   </div>`;
- 
-  // 6. TOP 5 HAAKJE-PATROON
+
   html+=`<div class="card"><div class="label">🎯 JOUW HAAKJE-PATROON</div><div class="sub">De eerste zin van je top 5 posts</div>`;
   d.top10.slice(0,5).forEach((p,i)=>{
     const eersteZin=p.tekst.replace(/\n/g,' ').trim().split(/(?<=[.!?])\s/)[0].slice(0,90);
@@ -492,8 +795,7 @@ function renderResultaat(d) {
     </div>`;
   });
   html+=`</div>`;
- 
-  // 7. VERBANDEN
+
   html+=`<div class="card"><div class="label">🔗 WAAROM WERKTEN JOUW TOP POSTS?</div><div class="sub">De verbanden tussen haakje, content-type en resultaat.</div>`;
   d.verbanden.forEach(v=>{
     const lk=v.rank===1?'#650D17':v.rank<=3?'#9F926A':'#cfc5ae';
@@ -514,8 +816,7 @@ function renderResultaat(d) {
     </div>`;
   });
   html+=`</div>`;
- 
-  // 8. HAAKJE KRUISANALYSE
+
   const maxH=d.haakjeRanking[0]?.gemBereik||1;
   const maxS=Math.max(...d.haakjeRanking.map(x=>x.gemSaves))||1;
   html+=`<div class="card"><div class="label">🎣 WELK HAAKJE WERKT HET BEST?</div><div class="sub">Klik op een type om voorbeelden te zien.</div><div id="haakje-lijst">`;
@@ -550,8 +851,7 @@ function renderResultaat(d) {
       :`<div class="inzicht-box">✦ <strong>${bereikTop.ht}</strong> scoort het meeste bereik — trekt nieuwe mensen aan.<br>✦ <strong>${savesTop.ht}</strong> scoort de meeste saves — wordt bewaard en onthouden.<br><span style="color:#7a6555;font-size:12px;">Bereik-haakjes voor groei, saves-haakjes voor autoriteit.</span></div>`;
   }
   html+=`</div></div>`;
- 
-  // 9. CTA VERGELIJKING
+
   if (d.ctaVergelijking.metCTA&&d.ctaVergelijking.zonderCTA) {
     const {metCTA,zonderCTA}=d.ctaVergelijking;
     const pct=zonderCTA.gemBereik>0?Math.round(((metCTA.gemBereik-zonderCTA.gemBereik)/zonderCTA.gemBereik)*100):0;
@@ -575,8 +875,7 @@ function renderResultaat(d) {
       <div class="inzicht-box">${Math.abs(pct)<10?'Posts mét en zonder CTA presteren vergelijkbaar op bereik. Een CTA dempt je bereik niet.':pct>0?`Posts mét CTA halen ${pct}% meer bereik. Jouw publiek reageert op actie-uitnodigingen.`:`Posts zonder CTA halen ${Math.abs(pct)}% meer bereik. Gebruik CTA-posts voor conversie, niet voor bereik.`}</div>
     </div>`;
   }
- 
-  // 10. CAPTION LENGTE
+
   html+=`<div class="card"><div class="label">✍️ CAPTION LENGTE</div><div class="sub">Wat werkt beter — kort of lang?</div>`;
   d.captionAdvies.forEach((c,i)=>{
     html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:4px;margin-bottom:8px;background:${i===0?'rgba(159,146,106,0.12)':'#E2DAC8'};border:1px solid ${i===0?'#9F926A':'#cfc5ae'};">
@@ -585,10 +884,8 @@ function renderResultaat(d) {
     </div>`;
   });
   html+=`</div>`;
- 
-  // 11. CONSISTENTIE
+
   const weken=Object.entries(d.weekStats).sort();
-  const maxW=Math.max(...weken.map(([,v])=>v));
   html+=`<div class="card"><div class="label">📈 CONSISTENTIE</div><div class="sub">Posts per week</div>
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
       ${weken.map(([week,count])=>`<div style="text-align:center;"><div style="color:#7a6555;font-size:9px;font-family:sans-serif;margin-bottom:2px;">${count}</div><div style="width:28px;height:${Math.max(8,count*12)}px;background:${count>=4?'#650D17':count>=2?'#9F926A':'#cfc5ae'};border-radius:3px 3px 0 0;"></div></div>`).join('')}
@@ -599,17 +896,16 @@ function renderResultaat(d) {
     </div>
     <div class="inzicht-box">${d.maxPostsPerWeek>d.gemPostsPerWeek*2?`Jouw ritme schommelt sterk. ${d.gemPostsPerWeek}× per week elke week is sterker dan pieken en dalen.`:`Jouw ritme is redelijk consistent. ${d.gemPostsPerWeek}× per week is jouw natuurlijke tempo.`}</div>
   </div>`;
- 
-  // VOLGENDE STAP
+
   html+=`<div class="volgende">
     <div style="color:#c4b48a;font-size:11px;letter-spacing:2px;font-family:sans-serif;margin-bottom:8px;">VOLGENDE STAP</div>
     <div style="color:#E2DAC8;font-size:16px;font-weight:700;margin-bottom:6px;">Les 2 — Visibility Code Dashboard</div>
     <div style="color:rgba(226,218,200,0.7);font-family:sans-serif;font-size:13px;line-height:1.6;">Op basis van deze analyse bouw je in de volgende sessie jouw persoonlijke content-dashboard. Jouw ritme, jouw swipe file, jouw systeem.</div>
   </div>`;
- 
+
   el.innerHTML=html;
 }
- 
+
 function toggleHaakje(i) {
   const vb=document.getElementById('haakje-vb-'+i);
   const arrow=document.getElementById('haakje-arrow-'+i);
@@ -617,11 +913,9 @@ function toggleHaakje(i) {
   vb.style.display=open?'block':'none';
   arrow.textContent=open?'▲':'▼';
 }
- 
-// Start
+
 toonFase('intro');
- 
-// Drag & drop
+
 document.addEventListener('DOMContentLoaded',()=>{
   const zone=document.querySelector('.upload-zone');
   if (zone) {
